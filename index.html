@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>303 Coffee</title>
+    <meta
+      name="description"
+      content="One product from 303 Coffee, loaded from the shop."
+    />
+    <meta name="theme-color" content="#241812" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/site.css" />
+  </head>
+  <body
+    data-store="https://darksalmon-wallaby-671725.hostingersite.com"
+    data-product-id="10"
+  >
+    <main id="page" class="is-loading" aria-busy="true">
+      <section class="stage">
+        <p class="stage-status" id="stage-status">Loading product</p>
+        <div class="frame">
+          <img id="photo" alt="" hidden />
+        </div>
+      </section>
+
+      <section class="sheet">
+        <p class="brand">303 Coffee</p>
+        <p class="status" id="status" role="status">Loading product…</p>
+        <h1 id="title"></h1>
+        <p class="price" id="price" hidden>
+          <span class="amount"></span>
+          <span class="unit" hidden></span>
+        </p>
+        <div class="desc" id="description" hidden></div>
+        <a class="buy" id="buy" hidden>View product</a>
+        <p class="where" id="note" hidden></p>
+      </section>
+    </main>
+    <noscript>This page loads the product from the shop. Turn on JavaScript to see it.</noscript>
+    <script src="js/product.js"></script>
+  </body>
+</html>
