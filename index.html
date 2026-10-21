@@ -157,44 +157,6 @@
     .description > :last-child { margin-bottom: 0; }
     .description img { max-width: 100%; height: auto; }
 
-    .policies {
-      display: grid;
-      gap: 2.25rem;
-      padding: 2.25rem 0 2rem;
-      border-top: 1px solid var(--line);
-    }
-
-    .policies h2 {
-      margin: 0 0 0.35rem;
-      font-family: Fraunces, "Iowan Old Style", Palatino, Georgia, serif;
-      font-size: clamp(1.7rem, 3vw, 2.2rem);
-      font-weight: 500;
-      letter-spacing: -0.03em;
-    }
-
-    .policies .updated {
-      margin: 0 0 0.8rem;
-      color: var(--muted);
-      font-size: 0.78rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .policies p,
-    .policies li {
-      max-width: 42rem;
-      color: var(--muted);
-    }
-
-    .policies p { margin: 0 0 0.75rem; }
-
-    .policies ul {
-      margin: 0;
-      padding-left: 1.15rem;
-    }
-
-    .policies li + li { margin-top: 0.45rem; }
-
     .gallery {
       margin-top: 1.5rem;
     }
@@ -370,8 +332,19 @@
       font-size: 0.9rem;
     }
 
-    footer a { text-decoration: none; }
-    footer a:hover { color: var(--ink); }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem 1.25rem;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
 
     :focus-visible {
       outline: 2px solid var(--rust);
@@ -484,48 +457,14 @@
       </article>
     </main>
 
-    <section class="policies" aria-label="Store policies">
-      <article>
-        <h2>Refund policy</h2>
-        <p class="updated">Updated October 21, 2026</p>
-        <p>All sales are final. 303 Coffee does not accept refunds.</p>
-        <ul>
-          <li>No refund is given after you place an order. That includes a change of mind, ordering the wrong quantity, or deciding you no longer want the product.</li>
-          <li>No refund is given for the product price or for any shipping charge.</li>
-          <li>We do not accept returns, exchanges, or cancellations.</li>
-          <li>Review the product, the quantity, and the total at checkout before you pay. Paying for the order means you accept this policy.</li>
-        </ul>
-      </article>
-      <article>
-        <h2>Shipping policy</h2>
-        <p class="updated">Updated October 21, 2026</p>
-        <p>303 Coffee ships this product to the delivery address you enter at checkout.</p>
-        <ul>
-          <li>Any shipping cost is calculated and shown on the checkout page before you pay.</li>
-          <li>You are responsible for entering a complete and accurate shipping address. An order sent to the address you provide is treated as delivered to you.</li>
-          <li>Delivery time depends on the destination and the carrier. A delivery date is not guaranteed.</li>
-          <li>After you place an order, it is prepared for shipment. It cannot be cancelled, changed, or redirected.</li>
-          <li>Risk of loss passes to the carrier when the order is handed over for delivery. A delay by the carrier, customs, or an incorrect address does not create a refund.</li>
-        </ul>
-      </article>
-      <article>
-        <h2>Terms and conditions</h2>
-        <p class="updated">Updated October 21, 2026</p>
-        <p>These terms cover every order placed from this page. Choosing Buy now and completing checkout means you agree to these terms, the refund policy, and the shipping policy.</p>
-        <ul>
-          <li>303 Coffee sells the product shown on this page. The title, description, and photographs are the description of that product.</li>
-          <li>The price, quantity, and shipping cost you confirm at checkout are the terms of that sale.</li>
-          <li>Payment is due in full at checkout. An order we cannot fulfill may be declined before payment is taken.</li>
-          <li>All sales are final. No refunds are accepted.</li>
-          <li>You are responsible for the name, shipping address, and payment details you submit.</li>
-          <li>The refund policy, the shipping policy, and these terms are the entire agreement for the sale.</li>
-        </ul>
-      </article>
-    </section>
-
     <footer>
       <span>303 Coffee</span>
-      <span>All sales are final</span>
+      <nav class="footer-links" aria-label="Store policies">
+        <a data-store-path="/refund-policy/" href="https://darksalmon-wallaby-671725.hostingersite.com/refund-policy/">Refund policy</a>
+        <a data-store-path="/shipping-policy/" href="https://darksalmon-wallaby-671725.hostingersite.com/shipping-policy/">Shipping policy</a>
+        <a data-store-path="/terms-and-conditions/" href="https://darksalmon-wallaby-671725.hostingersite.com/terms-and-conditions/">Terms and conditions</a>
+        <a data-store-path="/contact/" href="https://darksalmon-wallaby-671725.hostingersite.com/contact/">Contact</a>
+      </nav>
     </footer>
   </div>
 
@@ -586,30 +525,14 @@
           }
           for (const attr of [...child.attributes]) {
             const name = attr.name.toLowerCase();
-            const keepLink = child.tagName === "A" && name === "href";
             const keepImage = child.tagName === "IMG" && (name === "src" || name === "alt");
-            if (!keepLink && !keepImage) {
+            if (!keepImage) {
               child.removeAttribute(attr.name);
               continue;
             }
-            if (keepLink) {
-              const href = attr.value.trim();
-              if (!/^(https?:|mailto:)/i.test(href)) {
-                child.removeAttribute(attr.name);
-              } else {
-                child.rel = "noopener noreferrer";
-                child.target = "_blank";
-              }
-            }
-            if (child.tagName === "IMG" && name === "src" && !/^https?:\/\//i.test(attr.value.trim())) {
+            if (name === "src" && !/^https?:\/\//i.test(attr.value.trim())) {
               child.removeAttribute(attr.name);
             }
-          }
-          if (child.tagName === "A" && !child.getAttribute("href")) {
-            clean(child);
-            while (child.firstChild) node.insertBefore(child.firstChild, child);
-            child.remove();
-            continue;
           }
           if (child.tagName === "IMG" && !child.getAttribute("src")) {
             child.remove();
@@ -778,6 +701,9 @@
       const form = document.getElementById("purchase");
       form.action = origin + "/checkout/";
       form.querySelector("[name=add-to-cart]").value = String(id);
+      document.querySelectorAll("[data-store-path]").forEach((link) => {
+        link.href = origin + link.getAttribute("data-store-path");
+      });
 
       const productResponse = await fetch(origin + "/wp-json/wp/v2/product/" + id + "?_embed=wp:featuredmedia");
       if (!productResponse.ok) throw new Error("Product " + productResponse.status);
