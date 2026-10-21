@@ -10,7 +10,7 @@ The photographs sit in a gallery under the description and slide on their own wh
 
 **Buy now** opens the WooCommerce checkout with the quantity chosen on the page. Set a price on the product so WooCommerce will accept the purchase. With `wordpress/303coffee-storefront.php` active, Buy now also replaces whatever else was in the cart and still lands on checkout when the shop is set to return to the cart.
 
-The footer links only to four pages on the shop: refund policy, shipping policy, terms and conditions, and contact. Upload `wordpress/303coffee-pages.zip` in WP Admin → Plugins → Add New → Upload Plugin, then activate **303 Coffee Pages**. Activation publishes those four pages. Leave that plugin active so the contact form can send a message to the store email in Settings → General. Turn off Hostinger’s launching page so visitors can open the four pages.
+The footer links only to four pages on this site: refund policy, shipping policy, terms and conditions, and contact. They use the same design as the product page and do not open the WooCommerce store. Buy now still opens WooCommerce checkout.
 
 ## Publish the page
 
