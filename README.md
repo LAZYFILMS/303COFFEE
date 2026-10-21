@@ -4,9 +4,11 @@ One product page. The title, description, and photograph are read from the WooCo
 
 `https://darksalmon-wallaby-671725.hostingersite.com`
 
-Edit that product in WordPress (the product whose address ends in `post=10`) and refresh this page. The headline, short description, long description, and photo update from the shop. No redeploy is required for those changes.
+Edit that product in WordPress (the product whose address ends in `post=10`) and refresh this page. The headline, short description, long description, and every product photograph update from the shop. No redeploy is required for those changes.
 
-Price, stock, and **Add to cart** also come from that product once the small WordPress plugin in this repo is active and the product has a price. Until then the button opens the product in the shop.
+The photographs sit in a gallery under the description and slide on their own when the product has more than one. Add photos in the product gallery in WooCommerce and they join that carousel.
+
+**Buy now** opens the WooCommerce checkout with the quantity chosen on the page. Set a price on the product so WooCommerce will accept the purchase. With the plugin in this repo active, Buy now also replaces whatever else was in the cart and still lands on checkout when the shop is set to return to the cart.
 
 ## Publish the page
 
