@@ -174,8 +174,10 @@
     }
 
     function showPrice(commerce) {
-      if (!commerce || !commerce.price_html || !String(commerce.price_html).trim()) return;
-      const prices = commerce.prices || {};
+      const prices = commerce && commerce.prices;
+      if (!prices || prices.price === "" || prices.price == null) return;
+      const listed = commerce.price_html && String(commerce.price_html).trim();
+      if (!listed && Number(prices.price) === 0) return;
       const now = document.getElementById("price-now");
       const was = document.getElementById("price-was");
       now.textContent = formatMoney(prices.price, prices);
@@ -184,6 +186,35 @@
         was.hidden = false;
       }
       document.getElementById("price").hidden = false;
+    }
+
+    function loadCommerce(url) {
+      return fetch(url).then((response) => {
+        if (!response.ok) throw new Error("Commerce " + response.status);
+        return response.json();
+      }).catch(() => new Promise((resolve, reject) => {
+        const callback = "coffee303Commerce";
+        const script = document.createElement("script");
+        const timer = window.setTimeout(() => {
+          cleanup();
+          reject(new Error("Commerce"));
+        }, 8000);
+        const cleanup = () => {
+          window.clearTimeout(timer);
+          delete window[callback];
+          script.remove();
+        };
+        window[callback] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("Commerce"));
+        };
+        script.src = url + "?_jsonp=" + callback;
+        document.head.append(script);
+      }));
     }
 
     function addPhoto(src, alt) {
@@ -348,8 +379,7 @@
 
       let commerce = null;
       try {
-        const commerceResponse = await fetch(origin + "/wp-json/wc/store/v1/products/" + id);
-        if (commerceResponse.ok) commerce = await commerceResponse.json();
+        commerce = await loadCommerce(origin + "/wp-json/wc/store/v1/products/" + id);
       } catch (error) {
         commerce = null;
       }
