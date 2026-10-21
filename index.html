@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="303 Coffee. One product, loaded from the shop." />
+  <meta name="theme-color" content="#f4efe6" />
+  <title>303 Coffee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://darksalmon-wallaby-671725.hostingersite.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b140f'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='Georgia' font-size='12' fill='%23f4efe6'%3E303%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f3ecdf;
+      --ink: #1b140f;
+      --muted: #6b5848;
+      --line: rgba(27, 20, 15, 0.14);
+      --plate: #fbf7f1;
+      --rust: #9a3f24;
+      --shadow: 0 24px 60px rgba(70, 42, 18, 0.1);
+    }
+
+    * { box-sizing: border-box; }
+
+    [hidden] { display: none !important; }
+
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(900px 420px at 0% -10%, rgba(154, 63, 36, 0.09), transparent 55%),
+        var(--paper);
+      color: var(--ink);
+      font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      width: min(1120px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.25rem 0 2.5rem;
+    }
+
+    header, footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    header {
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mark {
+      font-family: Fraunces, "Iowan Old Style", Palatino, Georgia, serif;
+      font-size: 1.35rem;
+      font-weight: 620;
+      letter-spacing: -0.04em;
+      text-decoration: none;
+    }
+
+    .mark span { color: var(--rust); }
+
+    .shop {
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--muted);
+    }
+
+    .shop:hover { color: var(--ink); }
+
+    .product {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.92fr) minmax(260px, 1fr);
+      gap: clamp(1.5rem, 5vw, 5rem);
+      align-items: center;
+      padding: clamp(1.5rem, 4vw, 3.5rem) 0 2.5rem;
+    }
+
+    .frame {
+      display: grid;
+      place-items: center;
+      min-height: 420px;
+      padding: clamp(0.75rem, 2vw, 1.75rem);
+      background: var(--plate);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .frame img {
+      width: 100%;
+      height: auto;
+      max-height: min(72vh, 760px);
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .frame img.is-ready { opacity: 1; }
+
+    .frame.is-empty::after {
+      content: "No photograph on this product yet";
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .kicker {
+      margin: 0 0 0.8rem;
+      color: var(--rust);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Fraunces, "Iowan Old Style", Palatino, Georgia, serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 500;
+      letter-spacing: -0.045em;
+      line-height: 0.92;
+      text-wrap: balance;
+    }
+
+    .price {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin: 1.25rem 0 0;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.8rem;
+      letter-spacing: -0.03em;
+    }
+
+    .price s {
+      color: var(--muted);
+      font-size: 1.15rem;
+    }
+
+    .description {
+      max-width: 38rem;
+      margin-top: 1.1rem;
+      color: var(--muted);
+    }
+
+    .description.lead {
+      color: var(--ink);
+      font-size: 1.15rem;
+    }
+
+    .description > :first-child { margin-top: 0; }
+    .description > :last-child { margin-bottom: 0; }
+
+    .description a { color: var(--rust); }
+
+    .description img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .purchase {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.75rem;
+    }
+
+    .qty {
+      display: grid;
+      gap: 0.35rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    input[type="number"] {
+      width: 5rem;
+      padding: 0.9rem 0.4rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 1rem;
+      letter-spacing: 0;
+      text-align: center;
+      text-transform: none;
+    }
+
+    button {
+      flex: 1 1 12rem;
+      border: 0;
+      border-radius: 999px;
+      padding: 1rem 1.5rem;
+      background: var(--ink);
+      color: var(--paper);
+      font: inherit;
+      font-size: 0.92rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    button:hover:not(:disabled) { background: var(--rust); }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.55;
+    }
+
+    .error {
+      margin-top: 1rem;
+      color: var(--rust);
+    }
+
+    footer {
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    footer a { text-decoration: none; }
+
+    footer a:hover { color: var(--ink); }
+
+    :focus-visible {
+      outline: 2px solid var(--rust);
+      outline-offset: 3px;
+    }
+
+    .is-loading h1,
+    .is-loading .frame {
+      color: transparent;
+      background-image: linear-gradient(90deg, #e7dccb, #fbf7f1, #e7dccb);
+      background-size: 200% 100%;
+      animation: shine 1.2s linear infinite;
+    }
+
+    .is-loading h1 {
+      width: min(12ch, 100%);
+      border-radius: 12px;
+    }
+
+    @keyframes shine {
+      from { background-position: 100% 0; }
+      to { background-position: -100% 0; }
+    }
+
+    @media (max-width: 800px) {
+      .product { grid-template-columns: 1fr; }
+      .frame { min-height: 280px; }
+      button { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .frame img { transition: none; }
+      .is-loading h1,
+      .is-loading .frame { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <style>
+      .is-loading h1,
+      .is-loading .frame { animation: none; color: inherit; background-image: none; }
+      #purchase { display: none; }
+      #error { display: block !important; }
+    </style>
+  </noscript>
+  <div class="wrap">
+    <header>
+      <a class="mark" href="#top"><span>303</span> Coffee</a>
+      <a class="shop" id="shop-link" href="https://darksalmon-wallaby-671725.hostingersite.com/">The shop</a>
+    </header>
+
+    <main id="top">
+      <article class="product is-loading" id="product" aria-busy="true">
+        <div class="frame" id="frame">
+          <img id="photo" alt="" hidden />
+        </div>
+        <div class="details">
+          <p class="kicker" id="stock">Loading</p>
+          <h1 id="title">Product</h1>
+          <p class="price" id="price" hidden>
+            <span id="price-now"></span>
+            <s id="price-was" hidden></s>
+          </p>
+          <div class="description lead" id="summary" hidden></div>
+          <div class="description" id="description" hidden></div>
+          <form class="purchase" id="purchase" method="get" action="https://darksalmon-wallaby-671725.hostingersite.com/product/yash-winning-coffee/">
+            <input type="hidden" name="add-to-cart" value="10" disabled />
+            <div class="qty" id="qty-wrap" hidden>
+              <label for="quantity">Quantity</label>
+              <input id="quantity" name="quantity" type="number" min="1" step="1" value="1" inputmode="numeric" disabled />
+            </div>
+            <button id="purchase-button" type="submit" disabled>Loading</button>
+          </form>
+          <p class="error" id="error" hidden>
+            This product could not be loaded.
+            <a id="error-link" href="https://darksalmon-wallaby-671725.hostingersite.com/product/yash-winning-coffee/">Open it in the shop</a>.
+          </p>
+        </div>
+      </article>
+    </main>
+
+    <footer>
+      <span>303 Coffee</span>
+      <a id="footer-shop" href="https://darksalmon-wallaby-671725.hostingersite.com/">Shop</a>
+    </footer>
+  </div>
+
+  <script>
+    // Change these if the shop address or the WooCommerce product changes.
+    // The preconnect link in the head should use the same origin.
+    const STORE = {
+      origin: "https://darksalmon-wallaby-671725.hostingersite.com",
+      productId: 10
+    };
+
+    const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "EM", "B", "I", "UL", "OL", "LI", "A", "H2", "H3", "H4", "BLOCKQUOTE", "FIGURE", "FIGCAPTION", "IMG"]);
+    const DROPPED_TAGS = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "FORM", "LINK", "META", "TEMPLATE"]);
+
+    function storeOrigin() {
+      return new URL(STORE.origin).origin;
+    }
+
+    function isStoreUrl(value) {
+      try {
+        return new URL(value).origin === storeOrigin();
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function plain(html) {
+      const template = document.createElement("template");
+      template.innerHTML = html || "";
+      return (template.content.textContent || "").replace(/\s+/g, " ").trim();
+    }
+
+    function sanitize(html) {
+      const template = document.createElement("template");
+      template.innerHTML = html || "";
+
+      const clean = (node) => {
+        for (const child of [...node.childNodes]) {
+          if (child.nodeType === Node.TEXT_NODE) continue;
+          if (child.nodeType !== Node.ELEMENT_NODE) {
+            child.remove();
+            continue;
+          }
+          if (DROPPED_TAGS.has(child.tagName)) {
+            child.remove();
+            continue;
+          }
+          if (!ALLOWED_TAGS.has(child.tagName)) {
+            clean(child);
+            while (child.firstChild) node.insertBefore(child.firstChild, child);
+            child.remove();
+            continue;
+          }
+          for (const attr of [...child.attributes]) {
+            const name = attr.name.toLowerCase();
+            const keepLink = child.tagName === "A" && name === "href";
+            const keepImage = child.tagName === "IMG" && (name === "src" || name === "alt");
+            if (!keepLink && !keepImage) {
+              child.removeAttribute(attr.name);
+              continue;
+            }
+            if (keepLink) {
+              const href = attr.value.trim();
+              if (!/^(https?:|mailto:)/i.test(href)) {
+                child.removeAttribute(attr.name);
+              } else {
+                child.rel = "noopener noreferrer";
+                child.target = "_blank";
+              }
+            }
+            if (child.tagName === "IMG" && name === "src" && !/^https?:\/\//i.test(attr.value.trim())) {
+              child.removeAttribute(attr.name);
+            }
+          }
+          if (child.tagName === "A" && !child.getAttribute("href")) {
+            clean(child);
+            while (child.firstChild) node.insertBefore(child.firstChild, child);
+            child.remove();
+            continue;
+          }
+          if (child.tagName === "IMG" && !child.getAttribute("src")) {
+            child.remove();
+            continue;
+          }
+          clean(child);
+        }
+      };
+
+      clean(template.content);
+      const holder = document.createElement("div");
+      holder.append(...template.content.childNodes);
+      return holder.innerHTML;
+    }
+
+    function formatMoney(raw, prices) {
+      const minor = Number(prices.currency_minor_unit ?? 2);
+      const amount = Number(raw) / (10 ** minor);
+      const currency = prices.currency_code || "USD";
+      try {
+        return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);
+      } catch (error) {
+        const prefix = prices.currency_prefix || "";
+        const suffix = prices.currency_suffix || "";
+        return prefix + amount.toFixed(Number.isFinite(minor) ? minor : 2) + suffix;
+      }
+    }
+
+    function showPrice(commerce) {
+      if (!commerce || !commerce.price_html || !String(commerce.price_html).trim()) return;
+      const prices = commerce.prices || {};
+      const now = document.getElementById("price-now");
+      const was = document.getElementById("price-was");
+      now.textContent = formatMoney(prices.price, prices);
+      if (commerce.on_sale && prices.regular_price && prices.regular_price !== prices.price) {
+        was.textContent = formatMoney(prices.regular_price, prices);
+        was.hidden = false;
+      }
+      document.getElementById("price").hidden = false;
+    }
+
+    function revealImage(src, alt) {
+      const frame = document.getElementById("frame");
+      const img = document.getElementById("photo");
+      if (!src) {
+        frame.classList.add("is-empty");
+        return;
+      }
+      img.alt = alt || "";
+      img.hidden = false;
+      img.addEventListener("load", () => img.classList.add("is-ready"), { once: true });
+      img.addEventListener("error", () => {
+        img.hidden = true;
+        frame.classList.add("is-empty");
+      }, { once: true });
+      img.src = src;
+      if (img.complete && img.naturalWidth) img.classList.add("is-ready");
+    }
+
+    function finish(ok) {
+      const product = document.getElementById("product");
+      product.classList.remove("is-loading");
+      product.setAttribute("aria-busy", "false");
+      if (!ok) {
+        document.getElementById("stock").hidden = true;
+        document.getElementById("title").textContent = "Unavailable";
+        document.getElementById("purchase").hidden = true;
+        document.getElementById("error").hidden = false;
+      }
+    }
+
+    async function load() {
+      const origin = storeOrigin();
+      const id = STORE.productId;
+      const shopLinks = [document.getElementById("shop-link"), document.getElementById("footer-shop")];
+      shopLinks.forEach((link) => { link.href = origin + "/"; });
+
+      const productResponse = await fetch(origin + "/wp-json/wp/v2/product/" + id + "?_embed=wp:featuredmedia");
+      if (!productResponse.ok) throw new Error("Product " + productResponse.status);
+      const product = await productResponse.json();
+
+      const title = plain(product.title && product.title.rendered) || "Product";
+      document.title = title + " · 303 Coffee";
+      document.getElementById("title").textContent = title;
+
+      const summary = sanitize(product.excerpt && product.excerpt.rendered);
+      const description = sanitize(product.content && product.content.rendered);
+      const summaryEl = document.getElementById("summary");
+      const descriptionEl = document.getElementById("description");
+      if (plain(summary)) {
+        summaryEl.innerHTML = summary;
+        summaryEl.hidden = false;
+      }
+      if (plain(description)) {
+        descriptionEl.innerHTML = description;
+        descriptionEl.hidden = false;
+      }
+
+      const media = product._embedded && product._embedded["wp:featuredmedia"] && product._embedded["wp:featuredmedia"][0];
+      const photo = media && media.source_url;
+      revealImage(photo || "", (media && media.alt_text) || title);
+
+      const classes = product.class_list || [];
+      const stock = document.getElementById("stock");
+      if (classes.includes("outofstock")) stock.textContent = "Out of stock";
+      else if (classes.includes("instock")) stock.textContent = "In stock";
+      else stock.textContent = "In the shop";
+
+      const permalink = isStoreUrl(product.link) ? product.link : origin + "/?p=" + id;
+      document.getElementById("error-link").href = permalink;
+
+      let commerce = null;
+      try {
+        const commerceResponse = await fetch(origin + "/wp-json/wc/store/v1/products/" + id);
+        if (commerceResponse.ok) commerce = await commerceResponse.json();
+      } catch (error) {
+        commerce = null;
+      }
+
+      const form = document.getElementById("purchase");
+      const button = document.getElementById("purchase-button");
+      const addToCart = form.querySelector("[name=add-to-cart]");
+      const quantity = document.getElementById("quantity");
+
+      showPrice(commerce);
+      if (commerce && commerce.stock_availability && commerce.stock_availability.text) {
+        stock.textContent = commerce.stock_availability.text;
+      }
+
+      if (commerce && commerce.is_purchasable && commerce.is_in_stock !== false) {
+        const maximum = commerce.add_to_cart && Number(commerce.add_to_cart.maximum);
+        const minimum = commerce.add_to_cart && Number(commerce.add_to_cart.minimum);
+        if (minimum > 0) {
+          quantity.min = String(minimum);
+          quantity.value = String(minimum);
+        }
+        if (maximum > 0) quantity.max = String(maximum);
+        quantity.disabled = false;
+        document.getElementById("qty-wrap").hidden = false;
+        addToCart.disabled = false;
+        addToCart.value = String(product.id || id);
+        form.action = origin + "/cart/";
+        button.textContent = "Add to cart";
+      } else {
+        form.action = permalink;
+        button.textContent = "View product";
+      }
+
+      button.disabled = false;
+      finish(true);
+    }
+
+    load().catch(() => finish(false));
+  </script>
+</body>
+</html>
