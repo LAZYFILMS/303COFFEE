@@ -8,7 +8,9 @@ Edit that product in WordPress (the product whose address ends in `post=10`) and
 
 The photographs sit in a gallery under the description and slide on their own when the product has more than one. Add photos in the product gallery in WooCommerce and they join that carousel.
 
-**Buy now** opens the WooCommerce checkout with the quantity chosen on the page. Set a price on the product so WooCommerce will accept the purchase. With the plugin in this repo active, Buy now also replaces whatever else was in the cart and still lands on checkout when the shop is set to return to the cart.
+**Buy now** opens the WooCommerce checkout with the quantity chosen on the page. Set a price on the product so WooCommerce will accept the purchase. With `wordpress/303coffee-storefront.php` active, Buy now also replaces whatever else was in the cart and still lands on checkout when the shop is set to return to the cart.
+
+The footer links only to four pages on the shop: refund policy, shipping policy, terms and conditions, and contact. Upload `wordpress/303coffee-pages.zip` in WP Admin → Plugins → Add New → Upload Plugin, then activate **303 Coffee Pages**. Activation publishes those four pages. Leave that plugin active so the contact form can send a message to the store email in Settings → General. Turn off Hostinger’s launching page so visitors can open the four pages.
 
 ## Publish the page
 
