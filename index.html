@@ -156,6 +156,11 @@
       color: var(--muted);
     }
 
+    .description.lead {
+      color: var(--ink);
+      font-size: 1.15rem;
+    }
+
     .description > :first-child { margin-top: 0; }
     .description > :last-child { margin-bottom: 0; }
 
@@ -297,6 +302,7 @@
             <span id="price-now"></span>
             <s id="price-was" hidden></s>
           </p>
+          <div class="description lead" id="summary" hidden></div>
           <div class="description" id="description" hidden></div>
           <form class="purchase" id="purchase" method="get" action="https://darksalmon-wallaby-671725.hostingersite.com/product/yash-winning-coffee/">
             <input type="hidden" name="add-to-cart" value="10" disabled />
@@ -391,6 +397,16 @@
               child.removeAttribute(attr.name);
             }
           }
+          if (child.tagName === "A" && !child.getAttribute("href")) {
+            clean(child);
+            while (child.firstChild) node.insertBefore(child.firstChild, child);
+            child.remove();
+            continue;
+          }
+          if (child.tagName === "IMG" && !child.getAttribute("src")) {
+            child.remove();
+            continue;
+          }
           clean(child);
         }
       };
@@ -471,8 +487,14 @@
       document.title = title + " · 303 Coffee";
       document.getElementById("title").textContent = title;
 
+      const summary = sanitize(product.excerpt && product.excerpt.rendered);
       const description = sanitize(product.content && product.content.rendered);
+      const summaryEl = document.getElementById("summary");
       const descriptionEl = document.getElementById("description");
+      if (plain(summary)) {
+        summaryEl.innerHTML = summary;
+        summaryEl.hidden = false;
+      }
       if (plain(description)) {
         descriptionEl.innerHTML = description;
         descriptionEl.hidden = false;

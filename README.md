@@ -4,7 +4,7 @@ One product page. The title, description, and photograph are read from the WooCo
 
 `https://darksalmon-wallaby-671725.hostingersite.com`
 
-Edit that product in WordPress (the product whose address ends in `post=10`) and refresh this page. The headline, text, and photo update from the shop. No redeploy is required for those changes.
+Edit that product in WordPress (the product whose address ends in `post=10`) and refresh this page. The headline, short description, long description, and photo update from the shop. No redeploy is required for those changes.
 
 Price, stock, and **Add to cart** also come from that product once the small WordPress plugin in this repo is active and the product has a price. Until then the button opens the product in the shop.
 
