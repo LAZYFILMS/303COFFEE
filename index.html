@@ -44,6 +44,18 @@
           <form class="purchase" id="purchase" method="get" action="https://303coffee.in/checkout/">
             <input type="hidden" name="add-to-cart" value="10" />
             <input type="hidden" name="buy_now" value="1" />
+            <div class="grind">
+              <label class="qty-name" for="grind">Grind</label>
+              <select id="grind" name="grind" required>
+                <option value="" selected disabled>Choose a grind</option>
+                <option>Whole bean</option>
+                <option>Espresso</option>
+                <option>Moka pot</option>
+                <option>Filter</option>
+                <option>French press</option>
+                <option>Cold brew</option>
+              </select>
+            </div>
             <div class="qty">
               <span class="qty-name" id="qty-label">Quantity</span>
               <div class="stepper">
@@ -173,6 +185,19 @@
       } catch (error) {
         return (prices.currency_prefix || "") + amount.toFixed(Number.isFinite(minor) ? minor : 2) + (prices.currency_suffix || "");
       }
+    }
+
+    function setGrindChoices(commerce) {
+      const attributes = commerce && Array.isArray(commerce.attributes) ? commerce.attributes : [];
+      const grind = attributes.find((attribute) => /grind/i.test(attribute.name || ""));
+      const terms = grind && Array.isArray(grind.terms) ? grind.terms.map((term) => term.name).filter(Boolean) : [];
+      if (!terms.length) return;
+      const select = document.getElementById("grind");
+      const placeholder = new Option("Choose a grind", "");
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      select.replaceChildren(placeholder);
+      terms.forEach((name) => select.append(new Option(name, name)));
     }
 
     function showPrice(commerce) {
@@ -405,6 +430,7 @@
 
       renderGallery();
       showPrice(commerce);
+      setGrindChoices(commerce);
 
       const quantity = document.getElementById("quantity");
       const minimum = commerce && commerce.add_to_cart && Number(commerce.add_to_cart.minimum);

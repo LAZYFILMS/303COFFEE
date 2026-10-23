@@ -265,6 +265,23 @@
       margin-top: 1.5rem;
     }
 
+    .grind {
+      flex: 1 1 100%;
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .grind select {
+      width: min(100%, 22rem);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--plate);
+      color: var(--ink);
+      font: inherit;
+      font-size: 1rem;
+      padding: 0.8rem 1.15rem;
+    }
+
     .qty { display: grid; gap: 0.4rem; }
 
     .qty-name {
