@@ -57,6 +57,22 @@
 
     .mark span { color: var(--rust); }
 
+    .brand {
+      display: flex;
+      align-items: center;
+      min-height: 52px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .logo {
+      display: block;
+      height: 56px;
+      width: auto;
+      max-width: min(240px, 62vw);
+      object-fit: contain;
+    }
+
     .product {
       display: grid;
       grid-template-columns: minmax(260px, 0.9fr) minmax(280px, 1fr);
@@ -143,6 +159,13 @@
     .description > :first-child { margin-top: 0; }
     .description > :last-child { margin-bottom: 0; }
     .description img { max-width: 100%; height: auto; }
+
+    .story {
+      max-width: 46rem;
+      margin: 0 0 1.5rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid var(--line);
+    }
 
     .gallery {
       margin-top: 1.5rem;

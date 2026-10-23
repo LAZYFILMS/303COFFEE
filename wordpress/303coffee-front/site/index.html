@@ -22,7 +22,10 @@
   </noscript>
   <div class="wrap">
     <header>
-      <p class="mark"><span>303</span> Coffee</p>
+      <div class="brand">
+        <img class="logo" alt="303 Coffee" src="__COFFEE_LOGO__" hidden />
+        <p class="wordmark mark"><span>303</span> Coffee</p>
+      </div>
     </header>
 
     <main id="top">
@@ -31,27 +34,12 @@
           <img id="photo" alt="" hidden />
         </div>
         <div class="details">
-          <p class="kicker" id="stock">Loading</p>
           <h1 id="title">Product</h1>
           <p class="price" id="price" hidden>
             <span id="price-now"></span>
             <s id="price-was" hidden></s>
           </p>
           <div class="description lead" id="summary" hidden></div>
-          <div class="description" id="description" hidden></div>
-
-          <section class="gallery" id="gallery" hidden aria-roledescription="carousel" aria-label="Product photos">
-            <h2 class="gallery-label">Photos</h2>
-            <div class="gallery-frame">
-              <button class="gallery-nav" id="gallery-prev" type="button" aria-label="Previous photo">‹</button>
-              <div class="gallery-viewport" id="gallery-viewport">
-                <ul class="gallery-track" id="gallery-track"></ul>
-              </div>
-              <button class="gallery-nav" id="gallery-next" type="button" aria-label="Next photo">›</button>
-            </div>
-            <div class="dots" id="gallery-dots"></div>
-            <p class="visually-hidden" id="gallery-status" aria-live="polite"></p>
-          </section>
 
           <form class="purchase" id="purchase" method="get" action="https://303coffee.in/checkout/">
             <input type="hidden" name="add-to-cart" value="10" />
@@ -66,9 +54,23 @@
             </div>
             <button class="buy" id="purchase-button" type="submit">Buy now</button>
           </form>
+
+          <section class="gallery" id="gallery" hidden aria-roledescription="carousel" aria-label="Product photos">
+            <h2 class="gallery-label">Photos</h2>
+            <div class="gallery-frame">
+              <button class="gallery-nav" id="gallery-prev" type="button" aria-label="Previous photo">‹</button>
+              <div class="gallery-viewport" id="gallery-viewport">
+                <ul class="gallery-track" id="gallery-track"></ul>
+              </div>
+              <button class="gallery-nav" id="gallery-next" type="button" aria-label="Next photo">›</button>
+            </div>
+            <div class="dots" id="gallery-dots"></div>
+            <p class="visually-hidden" id="gallery-status" aria-live="polite"></p>
+          </section>
           <p class="error" id="error" hidden>This product could not be loaded. Buy now still opens checkout for product 10.</p>
         </div>
       </article>
+      <div class="description story" id="description" hidden></div>
     </main>
 
     <footer>
@@ -334,7 +336,6 @@
       product.classList.remove("is-loading");
       product.setAttribute("aria-busy", "false");
       if (!ok) {
-        document.getElementById("stock").hidden = true;
         document.getElementById("title").textContent = productTitle;
         document.getElementById("error").hidden = false;
       }
@@ -369,10 +370,6 @@
       }
 
       const classes = product.class_list || [];
-      const stock = document.getElementById("stock");
-      if (classes.includes("outofstock")) stock.textContent = "Out of stock";
-      else if (classes.includes("instock")) stock.textContent = "In stock";
-      else stock.textContent = "In the shop";
 
       const featured = product._embedded && product._embedded["wp:featuredmedia"] && product._embedded["wp:featuredmedia"][0];
       if (featured && featured.source_url) addPhoto(featured.source_url, featured.alt_text);
@@ -408,10 +405,6 @@
 
       renderGallery();
       showPrice(commerce);
-
-      if (commerce && commerce.stock_availability && commerce.stock_availability.text) {
-        stock.textContent = commerce.stock_availability.text;
-      }
 
       const quantity = document.getElementById("quantity");
       const minimum = commerce && commerce.add_to_cart && Number(commerce.add_to_cart.minimum);
