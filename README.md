@@ -37,6 +37,8 @@ Upload `wordpress/303coffee-front.zip` in WP Admin → Plugins → Add New → U
 
 If the blog is still there after activating, open Hostinger hPanel → Websites → 303coffee.in → Cache Manager and purge the cache. The old front page is stored there.
 
+The logo goes in WP Admin → Media → Add new. Name the file `303coffee-logo.png` (jpg and webp work too) before uploading. It replaces the “303 Coffee” wordmark at the top left. Until that file is in the library, the wordmark stays.
+
 ## Let the page read price and stock
 
 Title, description, and the image load with no extra setup. WooCommerce hides price and stock from other websites until you name them.

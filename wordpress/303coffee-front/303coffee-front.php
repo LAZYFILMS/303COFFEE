@@ -2,7 +2,7 @@
 /**
  * Plugin Name: 303 Coffee Homepage
  * Description: Shows the 303 Coffee product page at the front of this site. Checkout and cart stay in WooCommerce.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: 303 Coffee
  *
  * Install: WP Admin → Plugins → Add New → Upload Plugin, choose
@@ -88,12 +88,71 @@ function coffee_303_front_serve() {
 	$origin = untrailingslashit( home_url() );
 	if ( is_string( $html ) ) {
 		$html = str_replace( 'https://303coffee.in', $origin, $html );
+		$html = coffee_303_front_apply_logo( $html );
 		header( 'Content-Type: text/html; charset=UTF-8' );
 		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled static page.
 	}
 	exit;
 }
 add_action( 'template_redirect', 'coffee_303_front_serve', 0 );
+
+/**
+ * Logo for the top left. Use the site logo, or a media file named 303coffee-logo.
+ *
+ * @return string
+ */
+function coffee_303_front_logo_url() {
+	$custom = (int) get_theme_mod( 'custom_logo' );
+	if ( $custom ) {
+		$url = wp_get_attachment_image_url( $custom, 'full' );
+		if ( $url ) {
+			return $url;
+		}
+	}
+
+	$ids = get_posts(
+		array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+			'meta_query'     => array(
+				array(
+					'key'     => '_wp_attached_file',
+					'value'   => '303coffee-logo',
+					'compare' => 'LIKE',
+				),
+			),
+		)
+	);
+	if ( ! empty( $ids ) ) {
+		$url = wp_get_attachment_image_url( (int) $ids[0], 'full' );
+		if ( $url ) {
+			return $url;
+		}
+	}
+	return '';
+}
+
+/**
+ * Put the uploaded logo in the header. Keep the wordmark until one exists.
+ *
+ * @param string $html Page HTML.
+ * @return string
+ */
+function coffee_303_front_apply_logo( $html ) {
+	$tag  = '<img class="logo" alt="303 Coffee" src="__COFFEE_LOGO__" hidden />';
+	$logo = coffee_303_front_logo_url();
+	if ( $logo ) {
+		$img  = '<img class="logo" alt="303 Coffee" src="' . esc_url( $logo ) . '" />';
+		$html = str_replace( $tag, $img, $html );
+		$html = str_replace( 'class="wordmark mark"', 'class="wordmark mark" hidden', $html );
+		return $html;
+	}
+	return str_replace( $tag, '', $html );
+}
 
 /**
  * Buy now should land on checkout with only this product in the cart.
@@ -136,10 +195,10 @@ register_activation_hook( __FILE__, 'coffee_303_front_purge' );
  * Clear a cached missing stylesheet after this plugin is replaced.
  */
 function coffee_303_front_maybe_purge() {
-	if ( '1.0.1' === get_option( 'coffee_303_front_version' ) ) {
+	if ( '1.1.0' === get_option( 'coffee_303_front_version' ) ) {
 		return;
 	}
-	update_option( 'coffee_303_front_version', '1.0.1' );
+	update_option( 'coffee_303_front_version', '1.1.0' );
 	do_action( 'litespeed_purge_all' );
 }
 add_action( 'init', 'coffee_303_front_maybe_purge' );
@@ -152,6 +211,6 @@ function coffee_303_front_notice() {
 		return;
 	}
 	delete_transient( 'coffee_303_front_notice' );
-	echo '<div class="notice notice-success"><p>303 Coffee Homepage is on. The front of this site is the product page. If the old blog is still visible, purge the cache in Hostinger hPanel.</p></div>';
+	echo '<div class="notice notice-success"><p>303 Coffee Homepage is on. Upload the logo in Media → Add new, and name the file 303coffee-logo.png. If the old page is still visible, purge the cache in Hostinger hPanel.</p></div>';
 }
 add_action( 'admin_notices', 'coffee_303_front_notice' );
