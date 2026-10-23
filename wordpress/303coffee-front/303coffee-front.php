@@ -2,7 +2,7 @@
 /**
  * Plugin Name: 303 Coffee Homepage
  * Description: Shows the 303 Coffee product page at the front of this site. Checkout and cart stay in WooCommerce.
- * Version: 1.2.0
+ * Version: 1.3.0
  * Author: 303 Coffee
  *
  * Install: WP Admin → Plugins → Add New → Upload Plugin, choose
@@ -205,10 +205,10 @@ register_activation_hook( __FILE__, 'coffee_303_front_purge' );
  * Clear a cached missing stylesheet after this plugin is replaced.
  */
 function coffee_303_front_maybe_purge() {
-	if ( '1.2.0' === get_option( 'coffee_303_front_version' ) ) {
+	if ( '1.3.0' === get_option( 'coffee_303_front_version' ) ) {
 		return;
 	}
-	update_option( 'coffee_303_front_version', '1.2.0' );
+	update_option( 'coffee_303_front_version', '1.3.0' );
 	do_action( 'litespeed_purge_all' );
 }
 add_action( 'init', 'coffee_303_front_maybe_purge' );
