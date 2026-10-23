@@ -2,7 +2,7 @@
 /**
  * Plugin Name: 303 Coffee Storefront
  * Description: Lets the 303 Coffee landing page read public price and stock from the WooCommerce Store API.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: 303 Coffee
  *
  * WooCommerce only shares Store API data (price, stock, add to cart) with
@@ -28,10 +28,8 @@ add_filter( 'allowed_http_origins', 'coffee_303_storefront_origins' );
 function coffee_303_storefront_origins( $origins ) {
 	$storefronts = array(
 		'https://lazyfilms.github.io',
-		// Add each domain exactly as it appears in the browser bar.
-		// Include https:// and leave off any trailing slash or path.
-		// 'https://example.com',
-		// 'https://www.example.com',
+		'https://303coffee.in',
+		'https://www.303coffee.in',
 	);
 
 	$local = array(
