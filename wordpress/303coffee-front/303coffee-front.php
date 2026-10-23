@@ -2,7 +2,7 @@
 /**
  * Plugin Name: 303 Coffee Homepage
  * Description: Shows the 303 Coffee product page at the front of this site. Checkout and cart stay in WooCommerce.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: 303 Coffee
  *
  * Install: WP Admin → Plugins → Add New → Upload Plugin, choose
@@ -70,6 +70,11 @@ function coffee_303_front_serve() {
 		return;
 	}
 
+	global $wp_query;
+	if ( $wp_query instanceof WP_Query ) {
+		$wp_query->is_404 = false;
+	}
+	status_header( 200 );
 	nocache_headers();
 	header( 'X-LiteSpeed-Cache-Control: no-cache' );
 
@@ -126,6 +131,18 @@ function coffee_303_front_purge() {
 	set_transient( 'coffee_303_front_notice', 1, DAY_IN_SECONDS );
 }
 register_activation_hook( __FILE__, 'coffee_303_front_purge' );
+
+/**
+ * Clear a cached missing stylesheet after this plugin is replaced.
+ */
+function coffee_303_front_maybe_purge() {
+	if ( '1.0.1' === get_option( 'coffee_303_front_version' ) ) {
+		return;
+	}
+	update_option( 'coffee_303_front_version', '1.0.1' );
+	do_action( 'litespeed_purge_all' );
+}
+add_action( 'init', 'coffee_303_front_maybe_purge' );
 
 /**
  * Tell the store owner to clear Hostinger's cache if the blog is still cached.
