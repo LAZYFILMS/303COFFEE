@@ -435,6 +435,19 @@
 .sheet li + li { margin-top: 0.45rem; }
 .sheet a { color: var(--rust); }
 
+.contact-name {
+  color: var(--ink);
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.55rem;
+  letter-spacing: -0.03em;
+}
+
+.sheet address {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-style: normal;
+}
+
 .contact-form {
   display: grid;
   gap: 0.95rem;

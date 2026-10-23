@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Send a message to 303 Coffee." />
+  <meta name="description" content="Three Not Three Coffee LLP, Nagpur. Phone 8600860867." />
   <meta name="theme-color" content="#f4efe6" />
   <title>Contact · 303 Coffee</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,23 +24,14 @@
       <article class="sheet">
         <p class="kicker">303 Coffee</p>
         <h1>Contact</h1>
-        <p>Send a message about an order or this store.</p>
-        <form class="contact-form" id="contact-form" action="#message" method="post">
-          <label>
-            Name
-            <input name="name" type="text" required maxlength="120" autocomplete="name" />
-          </label>
-          <label>
-            Email
-            <input name="email" type="email" required maxlength="160" autocomplete="email" />
-          </label>
-          <label>
-            Message
-            <textarea name="message" required maxlength="4000"></textarea>
-          </label>
-          <button class="buy" type="submit">Send message</button>
-        </form>
-        <p class="form-note" id="contact-thanks" hidden>Thanks. Your message is saved in this browser.</p>
+        <p class="contact-name">Three Not Three Coffee LLP</p>
+        <address>
+          Plot no 218, Three Not Three coffee<br />
+          South Ambazari Road, Bajaj Nagar<br />
+          Nagpur 440010
+        </address>
+        <p><a href="tel:+918600860867">8600860867</a></p>
+        <p><a href="mailto:Threenotthreecoffee@gmail.com">Threenotthreecoffee@gmail.com</a></p>
       </article>
     </main>
     <footer>
@@ -53,23 +44,5 @@
       </nav>
     </footer>
   </div>
-  <script>
-    const form = document.getElementById("contact-form");
-    const thanks = document.getElementById("contact-thanks");
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const note = {
-        name: form.elements.name.value.trim(),
-        email: form.elements.email.value.trim(),
-        message: form.elements.message.value.trim(),
-        sentAt: new Date().toISOString()
-      };
-      const saved = JSON.parse(localStorage.getItem("coffee-303-messages") || "[]");
-      saved.push(note);
-      localStorage.setItem("coffee-303-messages", JSON.stringify(saved));
-      form.hidden = true;
-      thanks.hidden = false;
-    });
-  </script>
 </body>
 </html>

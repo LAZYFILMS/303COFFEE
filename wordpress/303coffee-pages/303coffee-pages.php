@@ -98,7 +98,7 @@ function coffee_303_pages_refund( $updated ) {
 <p>All sales are final. 303 Coffee does not accept refunds.</p>
 <ul>
 <li>No refund is given after an order is placed. That includes a change of mind, ordering the wrong quantity, or deciding you no longer want the product.</li>
-<li>No refund is given for the product price or for any shipping charge.</li>
+<li>No refund is given for the product price. Shipping is free.</li>
 <li>Returns, exchanges, and cancellations are not accepted.</li>
 <li>Review the product, the quantity, and the total at checkout before you pay. Paying for the order means you accept this policy.</li>
 </ul>';
@@ -110,9 +110,9 @@ function coffee_303_pages_refund( $updated ) {
 function coffee_303_pages_shipping( $updated ) {
 	return '<!-- 303-coffee-page -->
 <p><em>Updated ' . esc_html( $updated ) . '</em></p>
-<p>303 Coffee ships the product to the delivery address entered at checkout.</p>
+<p>Shipping is free. 303 Coffee ships the product to the delivery address entered at checkout, and no shipping charge is added.</p>
 <ul>
-<li>The shipping cost is calculated and shown on the checkout page before you pay.</li>
+<li>Shipping is free on every order.</li>
 <li>You are responsible for a complete and accurate shipping address. An order sent to the address you enter is treated as delivered to you.</li>
 <li>Orders are prepared for shipment after payment is received. A delivery date is not guaranteed. Delivery time depends on the destination and the carrier.</li>
 <li>After an order is placed, it cannot be cancelled, changed, or redirected.</li>
@@ -130,7 +130,7 @@ function coffee_303_pages_terms( $updated ) {
 <p>These terms cover use of this store and every order placed here. Placing an order means you agree to these terms, the <a href="/refund-policy/">refund policy</a>, and the <a href="/shipping-policy/">shipping policy</a>.</p>
 <ul>
 <li>The product title, description, and photographs on the store are the description of what is sold.</li>
-<li>The price, quantity, and shipping cost confirmed at checkout are the terms of that sale.</li>
+<li>The price and quantity confirmed at checkout are the terms of that sale. Shipping is free.</li>
 <li>Payment is due in full at checkout. An order that cannot be fulfilled may be declined before it ships.</li>
 <li>All sales are final. No refunds are accepted.</li>
 <li>Shipping follows the shipping policy.</li>
@@ -142,12 +142,14 @@ function coffee_303_pages_terms( $updated ) {
 }
 
 /**
- * Contact page body. The form is rendered by the shortcode while this plugin is active.
+ * Contact page body.
  */
 function coffee_303_pages_contact_content() {
 	return '<!-- 303-coffee-page -->
-<p>Send a message about an order or this store. Messages go to the email address saved in WordPress under Settings → General.</p>
-[coffee_303_contact_form]';
+<p><strong>Three Not Three Coffee LLP</strong></p>
+<p>Plot no 218, Three Not Three coffee<br>South Ambazari Road, Bajaj Nagar<br>Nagpur 440010</p>
+<p><a href="tel:+918600860867">8600860867</a></p>
+<p><a href="mailto:Threenotthreecoffee@gmail.com">Threenotthreecoffee@gmail.com</a></p>';
 }
 
 /**
