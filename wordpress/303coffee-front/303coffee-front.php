@@ -2,7 +2,7 @@
 /**
  * Plugin Name: 303 Coffee Homepage
  * Description: Shows the 303 Coffee product page at the front of this site. Checkout and cart stay in WooCommerce.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: 303 Coffee
  *
  * Install: WP Admin → Plugins → Add New → Upload Plugin, choose
@@ -97,38 +97,48 @@ function coffee_303_front_serve() {
 add_action( 'template_redirect', 'coffee_303_front_serve', 0 );
 
 /**
- * Logo for the top left. Use the site logo, or a media file named 303coffee-logo.
+ * Logo for the top left. Prefer the uploaded file 303_Wordmark_Black.
  *
  * @return string
  */
 function coffee_303_front_logo_url() {
-	$custom = (int) get_theme_mod( 'custom_logo' );
-	if ( $custom ) {
-		$url = wp_get_attachment_image_url( $custom, 'full' );
+	$names = array( '303_Wordmark_Black', '303coffee-logo' );
+	foreach ( $names as $name ) {
+		$ids = get_posts(
+			array(
+				'post_type'      => 'attachment',
+				'post_status'    => 'inherit',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+				'meta_query'     => array(
+					array(
+						'key'     => '_wp_attached_file',
+						'value'   => $name,
+						'compare' => 'LIKE',
+					),
+				),
+			)
+		);
+		if ( empty( $ids ) ) {
+			continue;
+		}
+		$url = wp_get_attachment_image_url( (int) $ids[0], 'medium_large' );
+		if ( ! $url ) {
+			$url = wp_get_attachment_image_url( (int) $ids[0], 'full' );
+		}
 		if ( $url ) {
 			return $url;
 		}
 	}
 
-	$ids = get_posts(
-		array(
-			'post_type'      => 'attachment',
-			'post_status'    => 'inherit',
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'orderby'        => 'date',
-			'order'          => 'DESC',
-			'meta_query'     => array(
-				array(
-					'key'     => '_wp_attached_file',
-					'value'   => '303coffee-logo',
-					'compare' => 'LIKE',
-				),
-			),
-		)
-	);
-	if ( ! empty( $ids ) ) {
-		$url = wp_get_attachment_image_url( (int) $ids[0], 'full' );
+	$custom = (int) get_theme_mod( 'custom_logo' );
+	if ( $custom ) {
+		$url = wp_get_attachment_image_url( $custom, 'medium_large' );
+		if ( ! $url ) {
+			$url = wp_get_attachment_image_url( $custom, 'full' );
+		}
 		if ( $url ) {
 			return $url;
 		}
@@ -195,10 +205,10 @@ register_activation_hook( __FILE__, 'coffee_303_front_purge' );
  * Clear a cached missing stylesheet after this plugin is replaced.
  */
 function coffee_303_front_maybe_purge() {
-	if ( '1.1.0' === get_option( 'coffee_303_front_version' ) ) {
+	if ( '1.2.0' === get_option( 'coffee_303_front_version' ) ) {
 		return;
 	}
-	update_option( 'coffee_303_front_version', '1.1.0' );
+	update_option( 'coffee_303_front_version', '1.2.0' );
 	do_action( 'litespeed_purge_all' );
 }
 add_action( 'init', 'coffee_303_front_maybe_purge' );
@@ -211,6 +221,6 @@ function coffee_303_front_notice() {
 		return;
 	}
 	delete_transient( 'coffee_303_front_notice' );
-	echo '<div class="notice notice-success"><p>303 Coffee Homepage is on. Upload the logo in Media → Add new, and name the file 303coffee-logo.png. If the old page is still visible, purge the cache in Hostinger hPanel.</p></div>';
+	echo '<div class="notice notice-success"><p>303 Coffee Homepage is on. The top-left logo is the media file 303_Wordmark_Black.png. If the old page is still visible, purge the cache in Hostinger hPanel.</p></div>';
 }
 add_action( 'admin_notices', 'coffee_303_front_notice' );

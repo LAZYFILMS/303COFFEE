@@ -67,9 +67,9 @@
 
     .logo {
       display: block;
-      height: 56px;
+      height: 76px;
       width: auto;
-      max-width: min(240px, 62vw);
+      max-width: min(220px, 58vw);
       object-fit: contain;
     }
 
