@@ -2,7 +2,7 @@
 
 One product page. The title, description, and photograph are read from the WooCommerce product when the page opens, using product id **10** on this shop:
 
-`https://darksalmon-wallaby-671725.hostingersite.com`
+`https://303coffee.in`
 
 Edit that product in WordPress (the product whose address ends in `post=10`) and refresh this page. The headline, short description, long description, and every product photograph update from the shop. No redeploy is required for those changes.
 
@@ -29,39 +29,13 @@ python3 -m http.server 8080
 
 Then open `http://127.0.0.1:8080/`.
 
-## Connect a domain you own
+## Open the product page on 303coffee.in
 
-Do this at the registrar where you bought the domain (or wherever its DNS is managed). Add the domain in GitHub **before** changing DNS.
+The domain already uses Hostinger's nameservers, and `https://303coffee.in/` is the WordPress shop. WordPress is still using its default blog as the front page, which is why the domain shows "Hello world" instead of the product.
 
-1. In the repository, open **Settings → Pages**.
-2. Under **Custom domain**, enter the domain (`example.com` or `www.example.com`) and save. GitHub writes a `CNAME` file for you.
-3. At your DNS host, point the domain at GitHub Pages.
+Upload `wordpress/303coffee-front.zip` in WP Admin → Plugins → Add New → Upload Plugin, then activate **303 Coffee Homepage**. The front of the site becomes this product page. Refund, shipping, terms, and contact stay in the same design. Checkout, cart, and the product in WooCommerce stay on `303coffee.in`.
 
-For a subdomain such as `www.example.com` or `shop.example.com`, add a `CNAME` record:
-
-| Name | Type | Value |
-| --- | --- | --- |
-| `www` | `CNAME` | `lazyfilms.github.io` |
-
-For the apex domain (`example.com` itself), add these `A` records on `@`, and these `AAAA` records if your host supports IPv6:
-
-| Type | Value |
-| --- | --- |
-| `A` | `185.199.108.153` |
-| `A` | `185.199.109.153` |
-| `A` | `185.199.110.153` |
-| `A` | `185.199.111.153` |
-| `AAAA` | `2606:50c0:8000::153` |
-| `AAAA` | `2606:50c0:8001::153` |
-| `AAAA` | `2606:50c0:8002::153` |
-| `AAAA` | `2606:50c0:8003::153` |
-
-If your DNS host offers an `ALIAS` or `ANAME` record, you can point `@` at `lazyfilms.github.io` instead of the `A` records. Do not add a wildcard such as `*.example.com`.
-
-4. Wait for DNS to update. In **Settings → Pages**, turn on **Enforce HTTPS** once GitHub offers it.
-5. Open `wordpress/303coffee-storefront.php` and add both `https://example.com` and `https://www.example.com` to the `$storefronts` list. Upload that file again if the plugin is already installed.
-
-GitHub's own write-up of these records: [Managing a custom domain for your GitHub Pages site](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
+If the blog is still there after activating, open Hostinger hPanel → Websites → 303coffee.in → Cache Manager and purge the cache. The old front page is stored there.
 
 ## Let the page read price and stock
 
@@ -75,7 +49,7 @@ On the product, set a regular price and leave it in stock. The landing page then
 
 ## Turn the shop on
 
-The public shop is still on Hostinger's launching page ("Something big is brewing"). The product data is available, which is why this page can show it, but cart and checkout stay behind that screen until you turn the launching page off in Hostinger. After that, **Add to cart** on this page lands in the WooCommerce cart.
+Checkout on `https://303coffee.in/checkout/` is the live WooCommerce checkout. The temporary Hostinger address can still show the launching page ("Something big is brewing"). Buy now on this product page uses `303coffee.in`.
 
 ## Use a different product
 

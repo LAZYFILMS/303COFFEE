@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="303 Coffee. One product, loaded from the shop." />
+  <meta name="theme-color" content="#f4efe6" />
+  <title>303 Coffee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://303coffee.in" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b140f'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='Georgia' font-size='12' fill='%23f4efe6'%3E303%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+  <noscript>
+    <style>
+      .is-loading h1,
+      .is-loading .frame { animation: none; color: inherit; background-image: none; }
+    </style>
+  </noscript>
+  <div class="wrap">
+    <header>
+      <p class="mark"><span>303</span> Coffee</p>
+    </header>
+
+    <main id="top">
+      <article class="product is-loading" id="product" aria-busy="true">
+        <div class="frame" id="frame">
+          <img id="photo" alt="" hidden />
+        </div>
+        <div class="details">
+          <p class="kicker" id="stock">Loading</p>
+          <h1 id="title">Product</h1>
+          <p class="price" id="price" hidden>
+            <span id="price-now"></span>
+            <s id="price-was" hidden></s>
+          </p>
+          <div class="description lead" id="summary" hidden></div>
+          <div class="description" id="description" hidden></div>
+
+          <section class="gallery" id="gallery" hidden aria-roledescription="carousel" aria-label="Product photos">
+            <h2 class="gallery-label">Photos</h2>
+            <div class="gallery-frame">
+              <button class="gallery-nav" id="gallery-prev" type="button" aria-label="Previous photo">‹</button>
+              <div class="gallery-viewport" id="gallery-viewport">
+                <ul class="gallery-track" id="gallery-track"></ul>
+              </div>
+              <button class="gallery-nav" id="gallery-next" type="button" aria-label="Next photo">›</button>
+            </div>
+            <div class="dots" id="gallery-dots"></div>
+            <p class="visually-hidden" id="gallery-status" aria-live="polite"></p>
+          </section>
+
+          <form class="purchase" id="purchase" method="get" action="https://303coffee.in/checkout/">
+            <input type="hidden" name="add-to-cart" value="10" />
+            <input type="hidden" name="buy_now" value="1" />
+            <div class="qty">
+              <span class="qty-name" id="qty-label">Quantity</span>
+              <div class="stepper">
+                <button type="button" id="qty-dec" aria-label="Decrease quantity">−</button>
+                <input id="quantity" name="quantity" type="number" min="1" step="1" value="1" inputmode="numeric" aria-labelledby="qty-label" />
+                <button type="button" id="qty-inc" aria-label="Increase quantity">+</button>
+              </div>
+            </div>
+            <button class="buy" id="purchase-button" type="submit">Buy now</button>
+          </form>
+          <p class="error" id="error" hidden>This product could not be loaded. Buy now still opens checkout for product 10.</p>
+        </div>
+      </article>
+    </main>
+
+    <footer>
+      <span>303 Coffee</span>
+      <nav class="footer-links" aria-label="Store policies">
+        <a href="refund-policy/">Refund policy</a>
+        <a href="shipping-policy/">Shipping policy</a>
+        <a href="terms-and-conditions/">Terms and conditions</a>
+        <a href="contact/">Contact</a>
+      </nav>
+    </footer>
+  </div>
+
+  <script>
+    // Change these if the shop address or the WooCommerce product changes.
+    // The preconnect link in the head should use the same origin.
+    const STORE = {
+      origin: "https://303coffee.in",
+      productId: 10
+    };
+
+    const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "EM", "B", "I", "UL", "OL", "LI", "H2", "H3", "H4", "BLOCKQUOTE", "FIGURE", "FIGCAPTION", "IMG"]);
+    const DROPPED_TAGS = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "FORM", "LINK", "META", "TEMPLATE"]);
+
+    const photos = [];
+    let photoIndex = 0;
+    let slideTimer = 0;
+    let productTitle = "Product";
+
+    function storeOrigin() {
+      return new URL(STORE.origin).origin;
+    }
+
+    function isStoreUrl(value) {
+      try {
+        return new URL(value).origin === storeOrigin();
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function plain(html) {
+      const template = document.createElement("template");
+      template.innerHTML = html || "";
+      return (template.content.textContent || "").replace(/\s+/g, " ").trim();
+    }
+
+    function sanitize(html) {
+      const template = document.createElement("template");
+      template.innerHTML = html || "";
+
+      const clean = (node) => {
+        for (const child of [...node.childNodes]) {
+          if (child.nodeType === Node.TEXT_NODE) continue;
+          if (child.nodeType !== Node.ELEMENT_NODE) {
+            child.remove();
+            continue;
+          }
+          if (DROPPED_TAGS.has(child.tagName)) {
+            child.remove();
+            continue;
+          }
+          if (!ALLOWED_TAGS.has(child.tagName)) {
+            clean(child);
+            while (child.firstChild) node.insertBefore(child.firstChild, child);
+            child.remove();
+            continue;
+          }
+          for (const attr of [...child.attributes]) {
+            const name = attr.name.toLowerCase();
+            const keepImage = child.tagName === "IMG" && (name === "src" || name === "alt");
+            if (!keepImage) {
+              child.removeAttribute(attr.name);
+              continue;
+            }
+            if (name === "src" && !/^https?:\/\//i.test(attr.value.trim())) {
+              child.removeAttribute(attr.name);
+            }
+          }
+          if (child.tagName === "IMG" && !child.getAttribute("src")) {
+            child.remove();
+            continue;
+          }
+          clean(child);
+        }
+      };
+
+      clean(template.content);
+      const holder = document.createElement("div");
+      holder.append(...template.content.childNodes);
+      return holder.innerHTML;
+    }
+
+    function formatMoney(raw, prices) {
+      const minor = Number(prices.currency_minor_unit ?? 2);
+      const amount = Number(raw) / (10 ** minor);
+      const currency = prices.currency_code || "USD";
+      try {
+        return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);
+      } catch (error) {
+        return (prices.currency_prefix || "") + amount.toFixed(Number.isFinite(minor) ? minor : 2) + (prices.currency_suffix || "");
+      }
+    }
+
+    function showPrice(commerce) {
+      const prices = commerce && commerce.prices;
+      if (!prices || prices.price === "" || prices.price == null) return;
+      const listed = commerce.price_html && String(commerce.price_html).trim();
+      if (!listed && Number(prices.price) === 0) return;
+      const now = document.getElementById("price-now");
+      const was = document.getElementById("price-was");
+      now.textContent = formatMoney(prices.price, prices);
+      if (commerce.on_sale && prices.regular_price && prices.regular_price !== prices.price) {
+        was.textContent = formatMoney(prices.regular_price, prices);
+        was.hidden = false;
+      }
+      document.getElementById("price").hidden = false;
+    }
+
+    function loadCommerce(url) {
+      return fetch(url).then((response) => {
+        if (!response.ok) throw new Error("Commerce " + response.status);
+        return response.json();
+      }).catch(() => new Promise((resolve, reject) => {
+        const callback = "coffee303Commerce";
+        const script = document.createElement("script");
+        const timer = window.setTimeout(() => {
+          cleanup();
+          reject(new Error("Commerce"));
+        }, 8000);
+        const cleanup = () => {
+          window.clearTimeout(timer);
+          delete window[callback];
+          script.remove();
+        };
+        window[callback] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("Commerce"));
+        };
+        script.src = url + "?_jsonp=" + callback;
+        document.head.append(script);
+      }));
+    }
+
+    function addPhoto(src, alt) {
+      if (!src || !/^https?:\/\//i.test(src) || photos.some((photo) => photo.src === src)) return;
+      photos.push({ src, alt: alt || "" });
+    }
+
+    function showHero(photo) {
+      const frame = document.getElementById("frame");
+      const img = document.getElementById("photo");
+      if (!photo) {
+        img.hidden = true;
+        frame.classList.add("is-empty");
+        return;
+      }
+      frame.classList.remove("is-empty");
+      const apply = () => {
+        img.alt = photo.alt || productTitle;
+        img.hidden = false;
+        img.classList.add("is-ready");
+      };
+      if (img.getAttribute("src") === photo.src) {
+        apply();
+        return;
+      }
+      img.classList.remove("is-ready");
+      img.addEventListener("load", apply, { once: true });
+      img.addEventListener("error", () => {
+        img.hidden = true;
+        frame.classList.add("is-empty");
+      }, { once: true });
+      img.src = photo.src;
+    }
+
+    function stopSlides() {
+      window.clearInterval(slideTimer);
+      slideTimer = 0;
+    }
+
+    function startSlides() {
+      stopSlides();
+      if (photos.length < 2) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      slideTimer = window.setInterval(() => showSlide(photoIndex + 1), 3800);
+    }
+
+    function showSlide(next) {
+      if (!photos.length) return;
+      photoIndex = (next + photos.length) % photos.length;
+      const track = document.getElementById("gallery-track");
+      const slide = track.querySelector(".slide");
+      const gap = parseFloat(getComputedStyle(track).gap) || 0;
+      const step = slide ? slide.getBoundingClientRect().width + gap : 0;
+      track.style.transform = "translateX(-" + (photoIndex * step) + "px)";
+      document.querySelectorAll("#gallery-dots .dot").forEach((dot, index) => {
+        if (index === photoIndex) dot.setAttribute("aria-current", "true");
+        else dot.removeAttribute("aria-current");
+      });
+      document.querySelectorAll("#gallery-track .slide").forEach((slide, index) => {
+        slide.setAttribute("aria-hidden", index === photoIndex ? "false" : "true");
+      });
+      const photo = photos[photoIndex];
+      document.getElementById("gallery-status").textContent = "Photo " + (photoIndex + 1) + " of " + photos.length;
+      showHero(photo);
+    }
+
+    function renderGallery() {
+      const gallery = document.getElementById("gallery");
+      const track = document.getElementById("gallery-track");
+      const dots = document.getElementById("gallery-dots");
+      track.replaceChildren();
+      dots.replaceChildren();
+      if (!photos.length) {
+        gallery.hidden = true;
+        showHero(null);
+        return;
+      }
+      photos.forEach((photo, index) => {
+        const slide = document.createElement("li");
+        slide.className = "slide";
+        const image = document.createElement("img");
+        image.src = photo.src;
+        image.alt = photo.alt || productTitle;
+        slide.append(image);
+        track.append(slide);
+
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "dot";
+        dot.setAttribute("aria-label", "Show photo " + (index + 1));
+        dot.addEventListener("click", () => {
+          showSlide(index);
+          startSlides();
+        });
+        dots.append(dot);
+      });
+      const single = photos.length < 2;
+      document.getElementById("gallery-prev").hidden = single;
+      document.getElementById("gallery-next").hidden = single;
+      dots.hidden = single;
+      gallery.hidden = false;
+      showSlide(0);
+      startSlides();
+    }
+
+    function clampQuantity() {
+      const input = document.getElementById("quantity");
+      const min = Number(input.min) || 1;
+      const max = input.max ? Number(input.max) : Infinity;
+      let value = Math.round(Number(input.value));
+      if (!Number.isFinite(value)) value = min;
+      input.value = String(Math.min(max, Math.max(min, value)));
+    }
+
+    function finish(ok) {
+      const product = document.getElementById("product");
+      product.classList.remove("is-loading");
+      product.setAttribute("aria-busy", "false");
+      if (!ok) {
+        document.getElementById("stock").hidden = true;
+        document.getElementById("title").textContent = productTitle;
+        document.getElementById("error").hidden = false;
+      }
+    }
+
+    async function load() {
+      const origin = storeOrigin();
+      const id = STORE.productId;
+      const form = document.getElementById("purchase");
+      form.action = origin + "/checkout/";
+      form.querySelector("[name=add-to-cart]").value = String(id);
+
+      const productResponse = await fetch(origin + "/wp-json/wp/v2/product/" + id + "?_embed=wp:featuredmedia");
+      if (!productResponse.ok) throw new Error("Product " + productResponse.status);
+      const product = await productResponse.json();
+
+      productTitle = plain(product.title && product.title.rendered) || "Product";
+      document.title = productTitle + " · 303 Coffee";
+      document.getElementById("title").textContent = productTitle;
+
+      const summary = sanitize(product.excerpt && product.excerpt.rendered);
+      const description = sanitize(product.content && product.content.rendered);
+      const summaryEl = document.getElementById("summary");
+      const descriptionEl = document.getElementById("description");
+      if (plain(summary)) {
+        summaryEl.innerHTML = summary;
+        summaryEl.hidden = false;
+      }
+      if (plain(description)) {
+        descriptionEl.innerHTML = description;
+        descriptionEl.hidden = false;
+      }
+
+      const classes = product.class_list || [];
+      const stock = document.getElementById("stock");
+      if (classes.includes("outofstock")) stock.textContent = "Out of stock";
+      else if (classes.includes("instock")) stock.textContent = "In stock";
+      else stock.textContent = "In the shop";
+
+      const featured = product._embedded && product._embedded["wp:featuredmedia"] && product._embedded["wp:featuredmedia"][0];
+      if (featured && featured.source_url) addPhoto(featured.source_url, featured.alt_text);
+
+      let commerce = null;
+      try {
+        commerce = await loadCommerce(origin + "/wp-json/wc/store/v1/products/" + id);
+      } catch (error) {
+        commerce = null;
+      }
+
+      if (commerce && Array.isArray(commerce.images) && commerce.images.length) {
+        photos.length = 0;
+        commerce.images.forEach((image) => addPhoto(image.src, image.alt || image.name));
+      } else {
+        try {
+          const mediaResponse = await fetch(origin + "/wp-json/wp/v2/media?parent=" + id + "&per_page=20");
+          if (mediaResponse.ok) {
+            const media = await mediaResponse.json();
+            if (Array.isArray(media)) {
+              media.sort((a, b) => {
+                if (a.id === product.featured_media) return -1;
+                if (b.id === product.featured_media) return 1;
+                return a.id - b.id;
+              });
+              media.forEach((item) => addPhoto(item.source_url, item.alt_text));
+            }
+          }
+        } catch (error) {
+          /* The featured image is already recorded. */
+        }
+      }
+
+      renderGallery();
+      showPrice(commerce);
+
+      if (commerce && commerce.stock_availability && commerce.stock_availability.text) {
+        stock.textContent = commerce.stock_availability.text;
+      }
+
+      const quantity = document.getElementById("quantity");
+      const minimum = commerce && commerce.add_to_cart && Number(commerce.add_to_cart.minimum);
+      const maximum = commerce && commerce.add_to_cart && Number(commerce.add_to_cart.maximum);
+      if (minimum > 0) {
+        quantity.min = String(minimum);
+        if (Number(quantity.value) < minimum) quantity.value = String(minimum);
+      }
+      if (maximum > 0) quantity.max = String(maximum);
+      if (commerce && commerce.is_in_stock === false || classes.includes("outofstock")) {
+        document.getElementById("purchase-button").disabled = true;
+      }
+      clampQuantity();
+      finish(true);
+    }
+
+    document.getElementById("gallery-prev").addEventListener("click", () => {
+      showSlide(photoIndex - 1);
+      startSlides();
+    });
+    document.getElementById("gallery-next").addEventListener("click", () => {
+      showSlide(photoIndex + 1);
+      startSlides();
+    });
+
+    const viewport = document.getElementById("gallery-viewport");
+    let touchStart = 0;
+    viewport.addEventListener("touchstart", (event) => {
+      touchStart = event.changedTouches[0].clientX;
+      stopSlides();
+    }, { passive: true });
+    viewport.addEventListener("touchend", (event) => {
+      const delta = event.changedTouches[0].clientX - touchStart;
+      if (delta > 40) showSlide(photoIndex - 1);
+      else if (delta < -40) showSlide(photoIndex + 1);
+      startSlides();
+    }, { passive: true });
+    viewport.addEventListener("mouseenter", stopSlides);
+    viewport.addEventListener("mouseleave", startSlides);
+    viewport.addEventListener("focusin", stopSlides);
+    viewport.addEventListener("focusout", startSlides);
+
+    document.getElementById("qty-dec").addEventListener("click", () => {
+      const input = document.getElementById("quantity");
+      input.value = String(Number(input.value) - 1);
+      clampQuantity();
+    });
+    document.getElementById("qty-inc").addEventListener("click", () => {
+      const input = document.getElementById("quantity");
+      input.value = String(Number(input.value) + 1);
+      clampQuantity();
+    });
+    document.getElementById("quantity").addEventListener("change", clampQuantity);
+
+    load().catch(() => finish(false));
+  </script>
+</body>
+</html>
