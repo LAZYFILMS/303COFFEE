@@ -2,7 +2,7 @@
 /**
  * Plugin Name: 303 Coffee Homepage
  * Description: Shows the 303 Coffee product page at the front of this site. Checkout and cart stay in WooCommerce.
- * Version: 1.3.0
+ * Version: 1.4.0
  * Author: 303 Coffee
  *
  * Install: WP Admin → Plugins → Add New → Upload Plugin, choose
@@ -193,6 +193,69 @@ function coffee_303_front_buy_now_checkout( $url ) {
 add_filter( 'woocommerce_add_to_cart_redirect', 'coffee_303_front_buy_now_checkout' );
 
 /**
+ * Grind chosen on the product page.
+ *
+ * @return string
+ */
+function coffee_303_front_requested_grind() {
+	if ( empty( $_REQUEST['grind'] ) ) {
+		return '';
+	}
+	$grind = sanitize_text_field( wp_unslash( $_REQUEST['grind'] ) );
+	if ( ! preg_match( '/^[A-Za-z0-9][A-Za-z0-9 \\-]{0,40}$/', $grind ) ) {
+		return '';
+	}
+	return $grind;
+}
+
+/**
+ * Keep the grind with this cart line.
+ *
+ * @param array $cart_item_data Cart line data.
+ * @return array
+ */
+function coffee_303_front_add_grind( $cart_item_data ) {
+	$grind = coffee_303_front_requested_grind();
+	if ( $grind ) {
+		$cart_item_data['coffee_303_grind'] = $grind;
+	}
+	return $cart_item_data;
+}
+add_filter( 'woocommerce_add_cart_item_data', 'coffee_303_front_add_grind' );
+
+/**
+ * Show the grind in the cart and at checkout.
+ *
+ * @param array $item_data Existing line details.
+ * @param array $cart_item Cart line.
+ * @return array
+ */
+function coffee_303_front_show_grind( $item_data, $cart_item ) {
+	if ( ! empty( $cart_item['coffee_303_grind'] ) ) {
+		$item_data[] = array(
+			'key'   => 'Grind',
+			'value' => $cart_item['coffee_303_grind'],
+		);
+	}
+	return $item_data;
+}
+add_filter( 'woocommerce_get_item_data', 'coffee_303_front_show_grind', 10, 2 );
+
+/**
+ * Save the grind on the order.
+ *
+ * @param WC_Order_Item_Product $item          Order line.
+ * @param string                $cart_item_key Cart key.
+ * @param array                 $values        Cart line values.
+ */
+function coffee_303_front_save_grind( $item, $cart_item_key, $values ) {
+	if ( ! empty( $values['coffee_303_grind'] ) ) {
+		$item->add_meta_data( 'Grind', $values['coffee_303_grind'], true );
+	}
+}
+add_action( 'woocommerce_checkout_create_order_line_item', 'coffee_303_front_save_grind', 10, 3 );
+
+/**
  * Drop the cached blog page so the product page can show.
  */
 function coffee_303_front_purge() {
@@ -205,10 +268,10 @@ register_activation_hook( __FILE__, 'coffee_303_front_purge' );
  * Clear a cached missing stylesheet after this plugin is replaced.
  */
 function coffee_303_front_maybe_purge() {
-	if ( '1.3.0' === get_option( 'coffee_303_front_version' ) ) {
+	if ( '1.4.0' === get_option( 'coffee_303_front_version' ) ) {
 		return;
 	}
-	update_option( 'coffee_303_front_version', '1.3.0' );
+	update_option( 'coffee_303_front_version', '1.4.0' );
 	do_action( 'litespeed_purge_all' );
 }
 add_action( 'init', 'coffee_303_front_maybe_purge' );
