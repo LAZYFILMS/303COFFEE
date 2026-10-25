@@ -495,13 +495,35 @@
     }
 
     @media (max-width: 800px) {
-      .product { grid-template-columns: 1fr; }
-      .frame { position: static; }
+      body { font-size: 0.92rem; }
+      .wrap { padding: 0.65rem 0 1.4rem; }
+      header { padding-bottom: 0.55rem; }
+      .brand { min-height: 0; }
+      .logo { height: 46px; max-width: 40vw; }
+      .product {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        padding: 0.7rem 0 1.2rem;
+      }
+      .frame {
+        position: static;
+        aspect-ratio: 5 / 3;
+        max-height: 30vh;
+      }
       .frame img { max-height: none; }
-      .buy { width: 100%; }
+      h1 { font-size: 1.42rem; }
+      .blend { margin-top: 0.3rem; font-size: 0.68rem; }
+      .price { margin-top: 0.4rem; font-size: 1.22rem; }
+      .description { margin-top: 0.45rem; }
+      .description.lead { font-size: 0.9rem; }
+      .purchase { gap: 0.5rem; margin-top: 0.7rem; }
+      .grind select { padding: 0.55rem 0.85rem; font-size: 0.9rem; }
+      .stepper button { width: 2.15rem; height: 2.25rem; font-size: 1.05rem; }
+      .buy { width: 100%; padding: 0.72rem 1rem; font-size: 0.8rem; }
+      .gallery { margin-top: 0.9rem; }
       .slide,
-      .slide img { width: 140px; }
-      .slide img { height: 168px; }
+      .slide img { width: 120px; }
+      .slide img { height: 144px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
