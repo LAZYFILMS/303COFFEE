@@ -2,7 +2,7 @@
 /**
  * Plugin Name: 303 Coffee Homepage
  * Description: Shows the 303 Coffee product page at the front of this site. Checkout and cart stay in WooCommerce.
- * Version: 1.6.0
+ * Version: 1.7.0
  * Author: 303 Coffee
  *
  * Install: WP Admin → Plugins → Add New → Upload Plugin, choose
@@ -124,7 +124,7 @@ function coffee_303_front_serve() {
 	}
 	status_header( 200 );
 	nocache_headers();
-	header( 'X-LiteSpeed-Cache-Control: no-cache' );
+	coffee_303_front_do_not_cache();
 
 	if ( 'site.css' === $path ) {
 		header( 'Content-Type: text/css; charset=UTF-8' );
@@ -310,16 +310,34 @@ function coffee_303_front_purge() {
 register_activation_hook( __FILE__, 'coffee_303_front_purge' );
 
 /**
- * Clear a cached missing stylesheet after this plugin is replaced.
+ * Keep LiteSpeed from storing these pages for days.
+ * A stored copy is why the phone kept the wide canvas.
+ */
+function coffee_303_front_do_not_cache() {
+	do_action( 'litespeed_control_set_nocache', '303 coffee front page' );
+	header( 'X-LiteSpeed-Cache-Control: no-cache' );
+	header( 'Cache-Control: no-cache, no-store, must-revalidate, max-age=0', true );
+}
+
+/**
+ * Drop a stored homepage or stylesheet once, including after this file is replaced.
  */
 function coffee_303_front_maybe_purge() {
-	if ( '1.6.0' === get_option( 'coffee_303_front_version' ) ) {
+	if ( ! is_admin() ) {
+		$routes = coffee_303_front_routes();
+		$path   = coffee_303_front_path();
+		if ( array_key_exists( $path, $routes ) ) {
+			coffee_303_front_do_not_cache();
+		}
+	}
+	if ( '1.7.0' === get_option( 'coffee_303_front_version' ) ) {
 		return;
 	}
-	update_option( 'coffee_303_front_version', '1.6.0' );
+	update_option( 'coffee_303_front_version', '1.7.0' );
 	do_action( 'litespeed_purge_all' );
+	header( 'X-LiteSpeed-Purge: *', false );
 }
-add_action( 'init', 'coffee_303_front_maybe_purge' );
+add_action( 'init', 'coffee_303_front_maybe_purge', 0 );
 
 /**
  * Tell the store owner to clear Hostinger's cache if the blog is still cached.
