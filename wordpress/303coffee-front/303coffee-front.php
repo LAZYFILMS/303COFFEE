@@ -2,7 +2,7 @@
 /**
  * Plugin Name: 303 Coffee Homepage
  * Description: Shows the 303 Coffee product page at the front of this site. Checkout and cart stay in WooCommerce.
- * Version: 1.5.0
+ * Version: 1.6.0
  * Author: 303 Coffee
  *
  * Install: WP Admin → Plugins → Add New → Upload Plugin, choose
@@ -50,6 +50,54 @@ function coffee_303_front_path() {
 }
 
 /**
+ * Page files in the GitHub repo. A push there updates the shop without
+ * replacing files in the file manager. The copy inside this plugin is the fallback.
+ *
+ * @param string $relative Path inside the repository.
+ * @return string
+ */
+function coffee_303_front_github_url( $relative ) {
+	return 'https://raw.githubusercontent.com/LAZYFILMS/303COFFEE/cursor/influence-blend-c68a/' . ltrim( $relative, '/' );
+}
+
+/**
+ * Latest page from GitHub, or the copy shipped with this plugin.
+ *
+ * @param string $relative Path inside the repository.
+ * @param string $local    Absolute path to the bundled file.
+ * @return string
+ */
+function coffee_303_front_body( $relative, $local ) {
+	$key    = 'coffee_303_front_file_' . md5( $relative );
+	$cached = get_transient( $key );
+	if ( is_string( $cached ) && '' !== $cached ) {
+		return $cached;
+	}
+
+	$response = wp_remote_get(
+		coffee_303_front_github_url( $relative ),
+		array(
+			'timeout' => 8,
+		)
+	);
+	if ( ! is_wp_error( $response ) && 200 === (int) wp_remote_retrieve_response_code( $response ) ) {
+		$body = wp_remote_retrieve_body( $response );
+		if ( is_string( $body ) && '' !== $body ) {
+			set_transient( $key, $body, MINUTE_IN_SECONDS );
+			return $body;
+		}
+	}
+
+	if ( is_readable( $local ) ) {
+		$fallback = file_get_contents( $local );
+		if ( is_string( $fallback ) ) {
+			return $fallback;
+		}
+	}
+	return '';
+}
+
+/**
  * Print one bundled page and stop WordPress from rendering the theme.
  */
 function coffee_303_front_serve() {
@@ -63,10 +111,10 @@ function coffee_303_front_serve() {
 		return;
 	}
 
-	$file = plugin_dir_path( __FILE__ ) . 'site/' . $routes[ $path ];
-	$root = realpath( plugin_dir_path( __FILE__ ) . 'site' );
-	$real = realpath( $file );
-	if ( false === $root || false === $real || 0 !== strpos( $real, $root . DIRECTORY_SEPARATOR ) || ! is_readable( $real ) ) {
+	$relative = $routes[ $path ];
+	$local    = plugin_dir_path( __FILE__ ) . 'site/' . $relative;
+	$body     = coffee_303_front_body( $relative, $local );
+	if ( '' === $body ) {
 		return;
 	}
 
@@ -80,18 +128,15 @@ function coffee_303_front_serve() {
 
 	if ( 'site.css' === $path ) {
 		header( 'Content-Type: text/css; charset=UTF-8' );
-		readfile( $real );
+		echo $body; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled stylesheet.
 		exit;
 	}
 
-	$html   = file_get_contents( $real );
 	$origin = untrailingslashit( home_url() );
-	if ( is_string( $html ) ) {
-		$html = str_replace( 'https://303coffee.in', $origin, $html );
-		$html = coffee_303_front_apply_logo( $html );
-		header( 'Content-Type: text/html; charset=UTF-8' );
-		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled static page.
-	}
+	$body   = str_replace( 'https://303coffee.in', $origin, $body );
+	$body   = coffee_303_front_apply_logo( $body );
+	header( 'Content-Type: text/html; charset=UTF-8' );
+	echo $body; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- bundled static page.
 	exit;
 }
 add_action( 'template_redirect', 'coffee_303_front_serve', 0 );
@@ -268,10 +313,10 @@ register_activation_hook( __FILE__, 'coffee_303_front_purge' );
  * Clear a cached missing stylesheet after this plugin is replaced.
  */
 function coffee_303_front_maybe_purge() {
-	if ( '1.5.0' === get_option( 'coffee_303_front_version' ) ) {
+	if ( '1.6.0' === get_option( 'coffee_303_front_version' ) ) {
 		return;
 	}
-	update_option( 'coffee_303_front_version', '1.5.0' );
+	update_option( 'coffee_303_front_version', '1.6.0' );
 	do_action( 'litespeed_purge_all' );
 }
 add_action( 'init', 'coffee_303_front_maybe_purge' );
