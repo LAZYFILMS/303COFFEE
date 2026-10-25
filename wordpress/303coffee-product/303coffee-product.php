@@ -5,9 +5,14 @@
  * Version: 1.0.0
  * Author: 303 Coffee
  *
- * Install: WP Admin → Plugins → Add New → Upload Plugin, choose
+ * Install without wp-admin: in Hostinger File Manager, upload this file to
+ * public_html/wp-content/mu-plugins/303coffee-product.php
+ * (create the mu-plugins folder if it is not there). Then open the site once.
+ * Must-use plugins run immediately, so the product is saved even when
+ * wp-admin says the link has expired.
+ *
+ * Alternate install: WP Admin → Plugins → Add New → Upload Plugin, choose
  * wordpress/303coffee-product.zip, then activate 303 Coffee Product Update.
- * The product editor does not need to be opened or saved.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
