@@ -43,7 +43,7 @@
           <div class="description lead" id="summary" hidden></div>
 
           <form class="purchase" id="purchase" method="get" action="https://303coffee.in/checkout/">
-            <input type="hidden" name="add-to-cart" value="10" />
+            <input type="hidden" name="add-to-cart" value="39" />
             <input type="hidden" name="buy_now" value="1" />
             <div class="grind">
               <label class="qty-name" for="grind">Grind</label>
@@ -80,7 +80,7 @@
             <div class="dots" id="gallery-dots"></div>
             <p class="visually-hidden" id="gallery-status" aria-live="polite"></p>
           </section>
-          <p class="error" id="error" hidden>This product could not be loaded. Buy now still opens checkout for product 10.</p>
+          <p class="error" id="error" hidden>This product could not be loaded. Buy now still opens checkout for product 39.</p>
         </div>
       </article>
       <div class="description story" id="description" hidden></div>
@@ -102,7 +102,7 @@
     // The preconnect link in the head should use the same origin.
     const STORE = {
       origin: "https://303coffee.in",
-      productId: 10
+      productId: 39
     };
     const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "EM", "B", "I", "UL", "OL", "LI", "H2", "H3", "H4", "BLOCKQUOTE", "FIGURE", "FIGCAPTION", "IMG", "A", "ASIDE", "DIV"]);
     const DROPPED_TAGS = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "FORM", "LINK", "META", "TEMPLATE"]);
