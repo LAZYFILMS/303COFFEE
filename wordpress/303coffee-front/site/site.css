@@ -505,12 +505,7 @@
         gap: 0.75rem;
         padding: 0.7rem 0 1.2rem;
       }
-      .frame {
-        position: static;
-        aspect-ratio: 5 / 3;
-        max-height: 30vh;
-      }
-      .frame img { max-height: none; }
+      .frame { position: static; }
       h1 { font-size: 1.42rem; }
       .blend { margin-top: 0.3rem; font-size: 0.68rem; }
       .price { margin-top: 0.4rem; font-size: 1.22rem; }
@@ -522,8 +517,8 @@
       .buy { width: 100%; padding: 0.72rem 1rem; font-size: 0.8rem; }
       .gallery { margin-top: 0.9rem; }
       .slide,
-      .slide img { width: 120px; }
-      .slide img { height: 144px; }
+      .slide img { width: 126px; }
+      .slide img { height: 150px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
