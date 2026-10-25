@@ -86,6 +86,14 @@
       <div class="description story" id="description" hidden></div>
     </main>
 
+    <a class="ig-float" id="instagram" href="#" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect>
+        <circle cx="12" cy="12" r="3.6"></circle>
+        <circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" stroke="none"></circle>
+      </svg>
+    </a>
+
     <footer>
       <span>303 Coffee</span>
       <nav class="footer-links" aria-label="Store policies">
@@ -253,6 +261,18 @@
       }));
     }
 
+    function highlightCoffee(root) {
+      const nodes = [...root.children];
+      const start = nodes.findIndex((node) => /about the coffee/i.test(node.textContent || ""));
+      if (start < 0) return;
+      let end = nodes.findIndex((node, index) => index > start && /about the estate/i.test(node.textContent || ""));
+      if (end < 0) end = nodes.length;
+      const box = document.createElement("div");
+      box.className = "coffee-highlight";
+      nodes[start].before(box);
+      nodes.slice(start, end).forEach((node) => box.append(node));
+    }
+
     function addPhoto(src, alt) {
       if (!src || !/^https?:\/\//i.test(src) || photos.some((photo) => photo.src === src)) return;
       photos.push({ src, alt: alt || "" });
@@ -414,6 +434,7 @@
       }
       if (plain(description)) {
         descriptionEl.innerHTML = description;
+        highlightCoffee(descriptionEl);
         descriptionEl.hidden = false;
       }
 
@@ -451,6 +472,11 @@
         }
       }
 
+      addPhoto(origin + "/wp-content/uploads/2026/10/IMG_9865.JPG-scaled.jpeg", productTitle);
+      addPhoto(origin + "/wp-content/uploads/2026/10/IMG_9850-scaled.jpg", productTitle);
+      addPhoto(origin + "/wp-content/uploads/2026/10/IMG_9896.JPG-scaled.jpeg", productTitle);
+      addPhoto(origin + "/wp-content/uploads/2026/10/IMG_9864.JPG-1-scaled.jpeg", productTitle);
+
       renderGallery();
       showPrice(commerce);
       setGrindChoices(commerce);
@@ -469,6 +495,11 @@
       clampQuantity();
       finish(true);
     }
+
+    document.getElementById("instagram").addEventListener("click", (event) => {
+      const link = event.currentTarget.getAttribute("href");
+      if (!link || link === "#") event.preventDefault();
+    });
 
     document.getElementById("gallery-prev").addEventListener("click", () => {
       showSlide(photoIndex - 1);
