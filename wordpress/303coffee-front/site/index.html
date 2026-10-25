@@ -34,18 +34,13 @@
           <img id="photo" alt="" hidden />
         </div>
         <div class="details">
-          <h1 id="title">The winning coffee</h1>
-          <p class="blend">Influence blend</p>
+          <h1 id="title">Product</h1>
+          <p class="blend" id="blend" hidden>Influence blend</p>
           <p class="price" id="price" hidden>
             <span id="price-now"></span>
             <s id="price-was" hidden></s>
           </p>
-          <div class="description lead" id="summary">
-            <p><strong>Origin:</strong> Coorg<br /><strong>Variety:</strong> SLN 13, Excelsa<br /><strong>Process:</strong> CM Naturals<br /><strong>Altitude:</strong> 1000mASL</p>
-            <p>Plum, Apricots, Red Grapes, Sweet Resins</p>
-            <p>100g</p>
-            <p class="roast-note">Note: These coffees will be roasted on --- and will be shipped on ----</p>
-          </div>
+          <div class="description lead" id="summary" hidden></div>
 
           <form class="purchase" id="purchase" method="get" action="https://303coffee.in/checkout/">
             <input type="hidden" name="add-to-cart" value="10" />
@@ -88,24 +83,7 @@
           <p class="error" id="error" hidden>This product could not be loaded. Buy now still opens checkout for product 10.</p>
         </div>
       </article>
-      <div class="description story" id="description">
-        <h2>What is Brewers Cup?</h2>
-        <p>The Brewers Cup is a platform where coffee professionals come together to showcase the art and science of manual brewing. Competitors present a coffee of their choice, carefully crafting every variable — from grind size and water to pouring technique and extraction — to bring out its finest qualities.</p>
-        <p>But it's about more than just brewing a great cup. It's about understanding the coffee, communicating its story, and creating an experience that connects the judges to what's in the cup.</p>
-        <p>At the Mumbai Regionals, our approach, our coffee, and our story came together to earn us the win.</p>
-        <aside class="coffee-highlight">
-          <h2>About the Coffee</h2>
-          <p>A blend of two remarkable coffees — Four Strain Yeast and Excelsa — crafted to bring together sweetness, bright acidity, body, and complexity.</p>
-          <p>Four strain yeast is a Selection 13, also known as Chandragiri. Fermented inside a tank using a mixed culture of four carefully selected yeast strains for sweetness and complexity. The cherries are fermented with these yeasts for 60 hours by a method called carbonic maceration, which influences the cup into becoming vivid, fruity, and aromatic.</p>
-          <p>And then Excelsa, known for its naturally low acidity and fuller body, brings a weight and depth the Arabica alone doesn't have. The coffee cherries were fermented for 60 hours as well by the same process of carbonic maceration.</p>
-          <p>Expect an expressive cup with notes of plum, apricot, red grapes, and sweet resins, complemented by a juicy, rounded mouthfeel and a lingering finish.</p>
-          <p>This is the coffee we brewed to win the National Brewers Cup Mumbai Regionals. Now, we're bringing that same experience to your cup.</p>
-        </aside>
-        <h2>About the Estate</h2>
-        <p>Nestled in Nakoor village in North Coorg, Karnataka, Mooleh Manay Estate is a family-run coffee farm with roots dating back to the early 1800s. Today, it is led by Akshay Dashrath and Komal Sable, who also co-founded South India Coffee Company (SICC), working at the intersection of coffee cultivation, processing, and research.</p>
-        <p>What makes the estate special is its commitment to exploring coffee beyond conventional boundaries, growing Arabica, Robusta, and the relatively uncommon Excelsa. Through experimental fermentation and a research-driven approach to processing, Mooleh Manay continues to explore new possibilities in Indian coffee.</p>
-        <p class="estate-links"><a href="https://www.instagram.com/sicc.coffee/">Instagram</a><a href="https://www.sicc.coffee/">Website</a></p>
-      </div>
+      <div class="description story" id="description" hidden></div>
     </main>
 
     <footer>
@@ -126,15 +104,13 @@
       origin: "https://303coffee.in",
       productId: 10
     };
-    const MAIN_PHOTO = STORE.origin + "/wp-content/uploads/2026/10/influence.jpg";
-
-    const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "EM", "B", "I", "UL", "OL", "LI", "H2", "H3", "H4", "BLOCKQUOTE", "FIGURE", "FIGCAPTION", "IMG", "A", "ASIDE"]);
+    const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "EM", "B", "I", "UL", "OL", "LI", "H2", "H3", "H4", "BLOCKQUOTE", "FIGURE", "FIGCAPTION", "IMG", "A", "ASIDE", "DIV"]);
     const DROPPED_TAGS = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "FORM", "LINK", "META", "TEMPLATE"]);
 
     const photos = [];
     let photoIndex = 0;
     let slideTimer = 0;
-    let productTitle = "The winning coffee";
+    let productTitle = "Product";
 
     function storeOrigin() {
       return new URL(STORE.origin).origin;
@@ -179,8 +155,9 @@
             const name = attr.name.toLowerCase();
             const keepImage = child.tagName === "IMG" && (name === "src" || name === "alt");
             const keepLink = child.tagName === "A" && name === "href" && /^https:\/\//i.test(attr.value.trim());
-            const keepBox = child.tagName === "ASIDE" && name === "class" && attr.value.trim() === "coffee-highlight";
-            if (!keepImage && !keepLink && !keepBox) {
+            const keepBox = (child.tagName === "ASIDE" || child.tagName === "DIV") && name === "class" && attr.value.trim() === "coffee-highlight";
+            const keepLinks = child.tagName === "P" && name === "class" && attr.value.trim() === "estate-links";
+            if (!keepImage && !keepLink && !keepBox && !keepLinks) {
               child.removeAttribute(attr.name);
               continue;
             }
@@ -281,11 +258,20 @@
       photos.push({ src, alt: alt || "" });
     }
 
-    function preferMainPhoto() {
-      const rest = photos.filter((photo) => photo.src !== MAIN_PHOTO);
-      photos.length = 0;
-      photos.push({ src: MAIN_PHOTO, alt: "Influence blend" });
-      rest.forEach((photo) => photos.push(photo));
+    function showTitle(raw) {
+      const title = plain(raw) || "Product";
+      productTitle = title;
+      document.title = title + " · 303 Coffee";
+      const split = title.match(/^(.*?)\s+[—–-]+\s*(influence blend)\s*$/i);
+      const blend = document.getElementById("blend");
+      if (split) {
+        document.getElementById("title").textContent = split[1];
+        blend.textContent = split[2];
+        blend.hidden = false;
+        return;
+      }
+      document.getElementById("title").textContent = title;
+      blend.hidden = true;
     }
 
     function showHero(photo) {
@@ -416,8 +402,20 @@
       if (!productResponse.ok) throw new Error("Product " + productResponse.status);
       const product = await productResponse.json();
 
-      document.title = productTitle + " · 303 Coffee";
-      document.getElementById("title").textContent = productTitle;
+      showTitle(product.title && product.title.rendered);
+
+      const summary = sanitize(product.excerpt && product.excerpt.rendered);
+      const description = sanitize(product.content && product.content.rendered);
+      const summaryEl = document.getElementById("summary");
+      const descriptionEl = document.getElementById("description");
+      if (plain(summary)) {
+        summaryEl.innerHTML = summary;
+        summaryEl.hidden = false;
+      }
+      if (plain(description)) {
+        descriptionEl.innerHTML = description;
+        descriptionEl.hidden = false;
+      }
 
       const classes = product.class_list || [];
 
@@ -453,7 +451,6 @@
         }
       }
 
-      preferMainPhoto();
       renderGallery();
       showPrice(commerce);
       setGrindChoices(commerce);
