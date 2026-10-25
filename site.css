@@ -84,10 +84,8 @@
     .frame {
       position: sticky;
       top: 1.25rem;
-      display: grid;
-      place-items: center;
-      min-height: 460px;
-      padding: clamp(0.75rem, 2vw, 1.5rem);
+      overflow: hidden;
+      aspect-ratio: 1;
       background: var(--plate);
       border: 1px solid var(--line);
       border-radius: 28px;
@@ -95,10 +93,11 @@
     }
 
     .frame img {
+      display: block;
       width: 100%;
-      height: auto;
-      max-height: min(72vh, 760px);
-      object-fit: contain;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
       opacity: 0;
       transition: opacity 0.35s ease;
     }
@@ -270,8 +269,9 @@
       display: block;
       width: 168px;
       height: 200px;
-      object-fit: contain;
-      background: #fff;
+      object-fit: cover;
+      object-position: center;
+      background: var(--plate);
       border: 1px solid var(--line);
       border-radius: 16px;
     }
@@ -496,8 +496,8 @@
 
     @media (max-width: 800px) {
       .product { grid-template-columns: 1fr; }
-      .frame { position: static; min-height: 0; }
-      .frame img { max-height: 46vh; }
+      .frame { position: static; }
+      .frame img { max-height: none; }
       .buy { width: 100%; }
       .slide,
       .slide img { width: 140px; }
