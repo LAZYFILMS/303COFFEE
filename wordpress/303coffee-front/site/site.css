@@ -156,6 +156,20 @@
       font-size: 1.15rem;
     }
 
+    .blend {
+      margin: 0.7rem 0 0;
+      color: var(--rust);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .roast-note {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
     .description > :first-child { margin-top: 0; }
     .description > :last-child { margin-bottom: 0; }
     .description img { max-width: 100%; height: auto; }
@@ -165,6 +179,44 @@
       margin: 0 0 1.5rem;
       padding-top: 1.75rem;
       border-top: 1px solid var(--line);
+    }
+
+    .story h2 {
+      margin: 1.5rem 0 0.55rem;
+      color: var(--ink);
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(1.7rem, 3vw, 2.15rem);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+    }
+
+    .story h2:first-child {
+      margin-top: 0;
+    }
+
+    .coffee-highlight {
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem 1.35rem;
+      color: var(--ink);
+      background: var(--plate);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+    }
+
+    .coffee-highlight h2 {
+      margin-top: 0;
+    }
+
+    .estate-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 1.1rem;
+    }
+
+    .estate-links a {
+      color: var(--rust);
+      text-underline-offset: 0.18em;
     }
 
     .gallery {
