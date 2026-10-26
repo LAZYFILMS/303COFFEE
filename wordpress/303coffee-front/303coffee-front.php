@@ -259,10 +259,27 @@ function coffee_303_front_requested_grind() {
  * @param array $cart_item_data Cart line data.
  * @return array
  */
+function coffee_303_front_requested_note() {
+	$grind = coffee_303_front_requested_grind();
+	if ( ! preg_match( '/^other$/i', $grind ) || empty( $_REQUEST['grind_note'] ) ) {
+		return '';
+	}
+	$note = sanitize_textarea_field( wp_unslash( $_REQUEST['grind_note'] ) );
+	$note = trim( preg_replace( '/[ \t]+/', ' ', $note ) );
+	if ( function_exists( 'mb_substr' ) ) {
+		return mb_substr( $note, 0, 400 );
+	}
+	return substr( $note, 0, 400 );
+}
+
 function coffee_303_front_add_grind( $cart_item_data ) {
 	$grind = coffee_303_front_requested_grind();
 	if ( $grind ) {
 		$cart_item_data['coffee_303_grind'] = $grind;
+	}
+	$note = coffee_303_front_requested_note();
+	if ( $note ) {
+		$cart_item_data['coffee_303_grind_note'] = $note;
 	}
 	return $cart_item_data;
 }
@@ -282,6 +299,12 @@ function coffee_303_front_show_grind( $item_data, $cart_item ) {
 			'value' => $cart_item['coffee_303_grind'],
 		);
 	}
+	if ( ! empty( $cart_item['coffee_303_grind_note'] ) ) {
+		$item_data[] = array(
+			'key'   => 'Notes',
+			'value' => $cart_item['coffee_303_grind_note'],
+		);
+	}
 	return $item_data;
 }
 add_filter( 'woocommerce_get_item_data', 'coffee_303_front_show_grind', 10, 2 );
@@ -296,6 +319,9 @@ add_filter( 'woocommerce_get_item_data', 'coffee_303_front_show_grind', 10, 2 );
 function coffee_303_front_save_grind( $item, $cart_item_key, $values ) {
 	if ( ! empty( $values['coffee_303_grind'] ) ) {
 		$item->add_meta_data( 'Grind', $values['coffee_303_grind'], true );
+	}
+	if ( ! empty( $values['coffee_303_grind_note'] ) ) {
+		$item->add_meta_data( 'Notes', $values['coffee_303_grind_note'], true );
 	}
 }
 add_action( 'woocommerce_checkout_create_order_line_item', 'coffee_303_front_save_grind', 10, 3 );

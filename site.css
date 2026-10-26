@@ -229,13 +229,32 @@
     .estate-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem 1.1rem;
+      gap: 0.7rem;
     }
 
-    .estate-links a {
-      color: var(--rust);
-      text-underline-offset: 0.18em;
+    .estate-links a,
+    .estate-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      min-height: 2.7rem;
+      padding: 0.35rem 0.95rem 0.35rem 0.45rem;
+      color: var(--paper);
+      background: var(--ink);
+      border-radius: 999px;
+      font-size: 0.92rem;
+      text-decoration: none;
     }
+
+    .estate-logo svg,
+    .estate-links a svg {
+      width: 1.45rem;
+      height: 1.45rem;
+      flex: 0 0 auto;
+    }
+
+    .estate-logo:hover,
+    .estate-links a:hover { background: var(--rust); }
 
     .gallery {
       margin-top: 1.5rem;
@@ -342,15 +361,32 @@
       gap: 0.4rem;
     }
 
-    .grind select {
-      width: min(100%, 22rem);
+    .grind select,
+    .grind-note textarea {
+      width: min(100%, 28rem);
       border: 1px solid var(--line);
-      border-radius: 999px;
       background: var(--plate);
       color: var(--ink);
       font: inherit;
       font-size: 1rem;
+    }
+
+    .grind select {
+      border-radius: 999px;
       padding: 0.8rem 1.15rem;
+    }
+
+    .grind-note {
+      display: grid;
+      gap: 0.4rem;
+      margin-top: 0.35rem;
+    }
+
+    .grind-note textarea {
+      min-height: 5.5rem;
+      border-radius: 18px;
+      padding: 0.8rem 1rem;
+      resize: vertical;
     }
 
     .qty { display: grid; gap: 0.4rem; }
