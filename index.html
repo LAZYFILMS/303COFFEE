@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://303coffee.in" />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b140f'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='Georgia' font-size='12' fill='%23f4efe6'%3E303%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="site.css?v=sq3" />
+  <link rel="stylesheet" href="site.css?v=sq4" />
   <style>
     @media (max-width: 800px) {
       .frame {
@@ -56,8 +56,8 @@
           <img id="photo" alt="" hidden />
         </div>
         <div class="details">
-          <h1 id="title">Product</h1>
-          <p class="blend" id="blend" hidden>Influence blend</p>
+          <h1 id="title">Influence Blend</h1>
+          <p class="blend" id="blend">The Winning Coffee</p>
           <p class="price" id="price" hidden>
             <span id="price-now"></span>
             <s id="price-was" hidden></s>
@@ -512,7 +512,6 @@
       product.classList.remove("is-loading");
       product.setAttribute("aria-busy", "false");
       if (!ok) {
-        document.getElementById("title").textContent = productTitle;
         document.getElementById("error").hidden = false;
       }
     }
