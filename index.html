@@ -11,7 +11,29 @@
   <link rel="preconnect" href="https://303coffee.in" />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b140f'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='Georgia' font-size='12' fill='%23f4efe6'%3E303%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="site.css" />
+  <link rel="stylesheet" href="site.css?v=sq4" />
+  <style>
+    @media (max-width: 800px) {
+      .frame {
+        position: relative !important;
+        top: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        aspect-ratio: 1 / 1 !important;
+        overflow: hidden !important;
+      }
+      .frame img {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-height: none !important;
+        object-fit: cover !important;
+        object-position: center !important;
+      }
+    }
+  </style>
 </head>
 <body>
   <noscript>
@@ -34,7 +56,8 @@
           <img id="photo" alt="" hidden />
         </div>
         <div class="details">
-          <h1 id="title">Product</h1>
+          <h1 id="title">Influence Blend</h1>
+          <p class="blend" id="blend">The Winning Coffee</p>
           <p class="price" id="price" hidden>
             <span id="price-now"></span>
             <s id="price-was" hidden></s>
@@ -42,20 +65,30 @@
           <div class="description lead" id="summary" hidden></div>
 
           <form class="purchase" id="purchase" method="get" action="https://303coffee.in/checkout/">
-            <input type="hidden" name="add-to-cart" value="10" />
+            <input type="hidden" name="add-to-cart" value="39" />
             <input type="hidden" name="buy_now" value="1" />
             <div class="grind">
               <label class="qty-name" for="grind">Grind</label>
               <select id="grind" name="grind" required>
                 <option value="" selected disabled>Choose a grind</option>
-                <option>Whole bean</option>
-                <option>Espresso</option>
-                <option>Moka pot</option>
-                <option>Filter</option>
-                <option>French press</option>
-                <option>Cold brew</option>
+                <option data-variation="42">Whole beans</option>
+                <option data-variation="43">Pour over hot</option>
+                <option data-variation="44">Pour over iced</option>
+                <option data-variation="45">Commercial espresso</option>
+                <option data-variation="46">Home espresso</option>
+                <option data-variation="47">Aeropress iced</option>
+                <option data-variation="48">Aeropress hot</option>
+                <option data-variation="49">Cold Brew</option>
+                <option data-variation="50">French press</option>
+                <option data-variation="51">Other</option>
               </select>
+              <div class="grind-note" id="grind-note" hidden>
+                <label class="qty-name" for="grind-note-text">Notes for this order</label>
+                <textarea id="grind-note-text" name="grind_note" rows="3" maxlength="400" placeholder="Tell us how you want it ground"></textarea>
+              </div>
             </div>
+            <input type="hidden" name="variation_id" id="variation-id" value="" disabled />
+            <input type="hidden" name="attribute_grind-size" id="grind-attribute" value="" disabled />
             <div class="qty">
               <span class="qty-name" id="qty-label">Quantity</span>
               <div class="stepper">
@@ -64,7 +97,7 @@
                 <button type="button" id="qty-inc" aria-label="Increase quantity">+</button>
               </div>
             </div>
-            <button class="buy" id="purchase-button" type="submit">Buy now</button>
+            <button class="buy" id="purchase-button" type="submit">Pre-order now</button>
           </form>
 
           <section class="gallery" id="gallery" hidden aria-roledescription="carousel" aria-label="Product photos">
@@ -79,11 +112,19 @@
             <div class="dots" id="gallery-dots"></div>
             <p class="visually-hidden" id="gallery-status" aria-live="polite"></p>
           </section>
-          <p class="error" id="error" hidden>This product could not be loaded. Buy now still opens checkout for product 10.</p>
+          <p class="error" id="error" hidden>This product could not be loaded. Pre-order still opens checkout for product 39.</p>
         </div>
       </article>
       <div class="description story" id="description" hidden></div>
     </main>
+
+    <a class="ig-float" id="instagram" href="https://www.instagram.com/thatlittlebrewer/" target="_blank" rel="noopener noreferrer" aria-label="303 Coffee on Instagram">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect>
+        <circle cx="12" cy="12" r="3.6"></circle>
+        <circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" stroke="none"></circle>
+      </svg>
+    </a>
 
     <footer>
       <span>303 Coffee</span>
@@ -101,15 +142,13 @@
     // The preconnect link in the head should use the same origin.
     const STORE = {
       origin: "https://303coffee.in",
-      productId: 10
+      productId: 39
     };
-
-    const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "EM", "B", "I", "UL", "OL", "LI", "H2", "H3", "H4", "BLOCKQUOTE", "FIGURE", "FIGCAPTION", "IMG"]);
+    const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "EM", "B", "I", "UL", "OL", "LI", "H2", "H3", "H4", "BLOCKQUOTE", "FIGURE", "FIGCAPTION", "IMG", "A", "ASIDE", "DIV"]);
     const DROPPED_TAGS = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "FORM", "LINK", "META", "TEMPLATE"]);
 
     const photos = [];
     let photoIndex = 0;
-    let slideTimer = 0;
     let productTitle = "Product";
 
     function storeOrigin() {
@@ -154,13 +193,22 @@
           for (const attr of [...child.attributes]) {
             const name = attr.name.toLowerCase();
             const keepImage = child.tagName === "IMG" && (name === "src" || name === "alt");
-            if (!keepImage) {
+            const keepLink = child.tagName === "A" && name === "href" && /^https:\/\//i.test(attr.value.trim());
+            const keepBox = (child.tagName === "ASIDE" || child.tagName === "DIV") && name === "class" && attr.value.trim() === "coffee-highlight";
+            const keepLinks = child.tagName === "P" && name === "class" && attr.value.trim() === "estate-links";
+            if (!keepImage && !keepLink && !keepBox && !keepLinks) {
               child.removeAttribute(attr.name);
               continue;
             }
             if (name === "src" && !/^https?:\/\//i.test(attr.value.trim())) {
               child.removeAttribute(attr.name);
             }
+          }
+          if (child.tagName === "A" && !child.getAttribute("href")) {
+            clean(child);
+            while (child.firstChild) node.insertBefore(child.firstChild, child);
+            child.remove();
+            continue;
           }
           if (child.tagName === "IMG" && !child.getAttribute("src")) {
             child.remove();
@@ -187,17 +235,59 @@
       }
     }
 
+    function grindVariations(commerce) {
+      const variations = commerce && Array.isArray(commerce.variations) ? commerce.variations : [];
+      const byName = new Map();
+      variations.forEach((variation) => {
+        const attrs = Array.isArray(variation.attributes) ? variation.attributes : [];
+        const grind = attrs.find((attribute) => /grind/i.test(attribute.name || ""));
+        if (grind && grind.value) byName.set(grind.value, variation.id);
+      });
+      return byName;
+    }
+
     function setGrindChoices(commerce) {
       const attributes = commerce && Array.isArray(commerce.attributes) ? commerce.attributes : [];
       const grind = attributes.find((attribute) => /grind/i.test(attribute.name || ""));
       const terms = grind && Array.isArray(grind.terms) ? grind.terms.map((term) => term.name).filter(Boolean) : [];
       if (!terms.length) return;
       const select = document.getElementById("grind");
+      const byName = grindVariations(commerce);
       const placeholder = new Option("Choose a grind", "");
       placeholder.disabled = true;
       placeholder.selected = true;
       select.replaceChildren(placeholder);
-      terms.forEach((name) => select.append(new Option(name, name)));
+      terms.forEach((name) => {
+        const option = new Option(name, name);
+        if (byName.has(name)) option.dataset.variation = String(byName.get(name));
+        select.append(option);
+      });
+      syncGrind();
+    }
+
+    function syncGrind() {
+      const select = document.getElementById("grind");
+      const option = select.selectedOptions[0];
+      const variation = document.getElementById("variation-id");
+      const attribute = document.getElementById("grind-attribute");
+      const noteWrap = document.getElementById("grind-note");
+      const note = document.getElementById("grind-note-text");
+      const other = /^other$/i.test(select.value);
+      noteWrap.hidden = !other;
+      note.required = other;
+      if (!other) note.value = "";
+      const variationId = option && option.dataset.variation;
+      if (variationId) {
+        variation.disabled = false;
+        variation.value = variationId;
+        attribute.disabled = false;
+        attribute.value = select.value;
+      } else {
+        variation.disabled = true;
+        variation.value = "";
+        attribute.disabled = true;
+        attribute.value = "";
+      }
     }
 
     function showPrice(commerce) {
@@ -244,9 +334,86 @@
       }));
     }
 
+    function highlightCoffee(root) {
+      const nodes = [...root.children];
+      const start = nodes.findIndex((node) => /about the coffee/i.test(node.textContent || ""));
+      if (start < 0) return;
+      let end = nodes.findIndex((node, index) => index > start && /about the estate/i.test(node.textContent || ""));
+      if (end < 0) end = nodes.length;
+      const box = document.createElement("div");
+      box.className = "coffee-highlight";
+      nodes[start].before(box);
+      nodes.slice(start, end).forEach((node) => box.append(node));
+    }
+
     function addPhoto(src, alt) {
       if (!src || !/^https?:\/\//i.test(src) || photos.some((photo) => photo.src === src)) return;
       photos.push({ src, alt: alt || "" });
+    }
+
+    function showTitle(raw) {
+      const title = plain(raw) || "Product";
+      const blend = document.getElementById("blend");
+      if (/influence\s+blend/i.test(title) && /winning\s+coffee/i.test(title)) {
+        productTitle = "Influence Blend - The Winning Coffee";
+        document.title = productTitle + " · 303 Coffee";
+        document.getElementById("title").textContent = "Influence Blend";
+        blend.textContent = "The Winning Coffee";
+        blend.hidden = false;
+        return;
+      }
+      productTitle = title;
+      document.title = title + " · 303 Coffee";
+      const split = title.match(/^(.*?)\s+[—–-]+\s*(influence blend)\s*$/i);
+      if (split) {
+        document.getElementById("title").textContent = split[1];
+        blend.textContent = split[2];
+        blend.hidden = false;
+        return;
+      }
+      document.getElementById("title").textContent = title;
+      blend.hidden = true;
+    }
+
+    function rewriteOrigin(html) {
+      return String(html || "").replace(/Origin:\s*Coorg\b/gi, "Origin: Mooley Manay estate, Coorg");
+    }
+
+    function estateIcon(kind) {
+      if (kind === "instagram") {
+        return '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect><circle cx="12" cy="12" r="3.6"></circle><circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" stroke="none"></circle></svg>';
+      }
+      return '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"></circle><path d="M3.8 12h16.4M12 3.8c2.2 2.5 3.3 5.3 3.3 8.2s-1.1 5.7-3.3 8.2c-2.2-2.5-3.3-5.3-3.3-8.2s1.1-5.7 3.3-8.2z"></path></svg>';
+    }
+
+    function linkEstate(root) {
+      const found = [];
+      [...root.querySelectorAll("p")].forEach((paragraph) => {
+        const text = (paragraph.textContent || "").replace(/\s+/g, " ").trim();
+        const url = (text.match(/https:\/\/\S+/i) || [])[0];
+        if (!url) return;
+        const cleanUrl = url.replace(/[),.;]+$/, "");
+        if (/instagram\.com/i.test(cleanUrl) && /insta/i.test(text)) {
+          found.push({ kind: "instagram", url: cleanUrl, label: "Instagram", node: paragraph });
+        } else if (/^web\b/i.test(text)) {
+          found.push({ kind: "web", url: cleanUrl, label: "Website", node: paragraph });
+        }
+      });
+      if (!found.length) return;
+      const row = document.createElement("p");
+      row.className = "estate-links";
+      found.forEach((item) => {
+        const link = document.createElement("a");
+        link.className = "estate-logo";
+        link.href = item.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.setAttribute("aria-label", item.label);
+        link.innerHTML = estateIcon(item.kind) + "<span>" + item.label + "</span>";
+        row.append(link);
+        item.node.remove();
+      });
+      root.append(row);
     }
 
     function showHero(photo) {
@@ -274,18 +441,6 @@
         frame.classList.add("is-empty");
       }, { once: true });
       img.src = photo.src;
-    }
-
-    function stopSlides() {
-      window.clearInterval(slideTimer);
-      slideTimer = 0;
-    }
-
-    function startSlides() {
-      stopSlides();
-      if (photos.length < 2) return;
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      slideTimer = window.setInterval(() => showSlide(photoIndex + 1), 3800);
     }
 
     function showSlide(next) {
@@ -332,10 +487,7 @@
         dot.type = "button";
         dot.className = "dot";
         dot.setAttribute("aria-label", "Show photo " + (index + 1));
-        dot.addEventListener("click", () => {
-          showSlide(index);
-          startSlides();
-        });
+        dot.addEventListener("click", () => showSlide(index));
         dots.append(dot);
       });
       const single = photos.length < 2;
@@ -344,7 +496,6 @@
       dots.hidden = single;
       gallery.hidden = false;
       showSlide(0);
-      startSlides();
     }
 
     function clampQuantity() {
@@ -361,7 +512,6 @@
       product.classList.remove("is-loading");
       product.setAttribute("aria-busy", "false");
       if (!ok) {
-        document.getElementById("title").textContent = productTitle;
         document.getElementById("error").hidden = false;
       }
     }
@@ -377,12 +527,10 @@
       if (!productResponse.ok) throw new Error("Product " + productResponse.status);
       const product = await productResponse.json();
 
-      productTitle = plain(product.title && product.title.rendered) || "Product";
-      document.title = productTitle + " · 303 Coffee";
-      document.getElementById("title").textContent = productTitle;
+      showTitle(product.title && product.title.rendered);
 
-      const summary = sanitize(product.excerpt && product.excerpt.rendered);
-      const description = sanitize(product.content && product.content.rendered);
+      const summary = sanitize(rewriteOrigin(product.excerpt && product.excerpt.rendered));
+      const description = sanitize(rewriteOrigin(product.content && product.content.rendered));
       const summaryEl = document.getElementById("summary");
       const descriptionEl = document.getElementById("description");
       if (plain(summary)) {
@@ -391,6 +539,8 @@
       }
       if (plain(description)) {
         descriptionEl.innerHTML = description;
+        highlightCoffee(descriptionEl);
+        linkEstate(descriptionEl);
         descriptionEl.hidden = false;
       }
 
@@ -428,6 +578,11 @@
         }
       }
 
+      addPhoto(origin + "/wp-content/uploads/2026/10/IMG_9865.JPG-scaled.jpeg", productTitle);
+      addPhoto(origin + "/wp-content/uploads/2026/10/IMG_9850-scaled.jpg", productTitle);
+      addPhoto(origin + "/wp-content/uploads/2026/10/IMG_9896.JPG-scaled.jpeg", productTitle);
+      addPhoto(origin + "/wp-content/uploads/2026/10/IMG_9864.JPG-1-scaled.jpeg", productTitle);
+
       renderGallery();
       showPrice(commerce);
       setGrindChoices(commerce);
@@ -447,31 +602,26 @@
       finish(true);
     }
 
-    document.getElementById("gallery-prev").addEventListener("click", () => {
-      showSlide(photoIndex - 1);
-      startSlides();
+    document.getElementById("instagram").addEventListener("click", (event) => {
+      const link = event.currentTarget.getAttribute("href");
+      if (!link || link === "#") event.preventDefault();
     });
-    document.getElementById("gallery-next").addEventListener("click", () => {
-      showSlide(photoIndex + 1);
-      startSlides();
-    });
+
+    document.getElementById("gallery-prev").addEventListener("click", () => showSlide(photoIndex - 1));
+    document.getElementById("gallery-next").addEventListener("click", () => showSlide(photoIndex + 1));
+    document.getElementById("grind").addEventListener("change", syncGrind);
+    document.getElementById("purchase").addEventListener("submit", syncGrind);
 
     const viewport = document.getElementById("gallery-viewport");
     let touchStart = 0;
     viewport.addEventListener("touchstart", (event) => {
       touchStart = event.changedTouches[0].clientX;
-      stopSlides();
     }, { passive: true });
     viewport.addEventListener("touchend", (event) => {
       const delta = event.changedTouches[0].clientX - touchStart;
       if (delta > 40) showSlide(photoIndex - 1);
       else if (delta < -40) showSlide(photoIndex + 1);
-      startSlides();
     }, { passive: true });
-    viewport.addEventListener("mouseenter", stopSlides);
-    viewport.addEventListener("mouseleave", startSlides);
-    viewport.addEventListener("focusin", stopSlides);
-    viewport.addEventListener("focusout", startSlides);
 
     document.getElementById("qty-dec").addEventListener("click", () => {
       const input = document.getElementById("quantity");
