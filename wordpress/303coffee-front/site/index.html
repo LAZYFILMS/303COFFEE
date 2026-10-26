@@ -357,8 +357,9 @@
       if (/influence\s+blend/i.test(title) && /winning\s+coffee/i.test(title)) {
         productTitle = "Influence Blend - The Winning Coffee";
         document.title = productTitle + " · 303 Coffee";
-        document.getElementById("title").textContent = productTitle;
-        blend.hidden = true;
+        document.getElementById("title").textContent = "Influence Blend";
+        blend.textContent = "The Winning Coffee";
+        blend.hidden = false;
         return;
       }
       productTitle = title;
