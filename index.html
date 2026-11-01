@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://303coffee.in" />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b140f'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='Georgia' font-size='12' fill='%23f4efe6'%3E303%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="site.css?v=sq4" />
+  <link rel="stylesheet" href="site.css?v=sq5" />
   <style>
     @media (max-width: 800px) {
       .frame {
@@ -71,20 +71,12 @@
               <label class="qty-name" for="grind">Grind</label>
               <select id="grind" name="grind" required>
                 <option value="" selected disabled>Choose a grind</option>
-                <option data-variation="42">Whole beans</option>
-                <option data-variation="43">Pour over hot</option>
-                <option data-variation="44">Pour over iced</option>
-                <option data-variation="45">Commercial espresso</option>
-                <option data-variation="46">Home espresso</option>
-                <option data-variation="47">Aeropress iced</option>
-                <option data-variation="48">Aeropress hot</option>
-                <option data-variation="49">Cold Brew</option>
-                <option data-variation="50">French press</option>
-                <option data-variation="51">Other</option>
+                <option value="Whole beans" data-variation="42">Whole beans</option>
+                <option value="Other" data-variation="51">Other</option>
               </select>
               <div class="grind-note" id="grind-note" hidden>
-                <label class="qty-name" for="grind-note-text">Notes for this order</label>
-                <textarea id="grind-note-text" name="grind_note" rows="3" maxlength="400" placeholder="Tell us how you want it ground"></textarea>
+                <label class="qty-name" for="grind-note-text">Instructions</label>
+                <textarea id="grind-note-text" name="grind_note" rows="3" maxlength="400" placeholder="Tell us how to grind this order"></textarea>
               </div>
             </div>
             <input type="hidden" name="variation_id" id="variation-id" value="" disabled />
@@ -247,19 +239,16 @@
     }
 
     function setGrindChoices(commerce) {
-      const attributes = commerce && Array.isArray(commerce.attributes) ? commerce.attributes : [];
-      const grind = attributes.find((attribute) => /grind/i.test(attribute.name || ""));
-      const terms = grind && Array.isArray(grind.terms) ? grind.terms.map((term) => term.name).filter(Boolean) : [];
-      if (!terms.length) return;
-      const select = document.getElementById("grind");
       const byName = grindVariations(commerce);
+      if (!byName.size) return;
+      const select = document.getElementById("grind");
       const placeholder = new Option("Choose a grind", "");
       placeholder.disabled = true;
       placeholder.selected = true;
       select.replaceChildren(placeholder);
-      terms.forEach((name) => {
+      byName.forEach((id, name) => {
         const option = new Option(name, name);
-        if (byName.has(name)) option.dataset.variation = String(byName.get(name));
+        option.dataset.variation = String(id);
         select.append(option);
       });
       syncGrind();
