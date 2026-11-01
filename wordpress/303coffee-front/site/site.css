@@ -84,10 +84,13 @@
     .frame {
       position: sticky;
       top: 1.25rem;
-      display: grid;
-      place-items: center;
-      min-height: 460px;
-      padding: clamp(0.75rem, 2vw, 1.5rem);
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      max-height: none;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
       background: var(--plate);
       border: 1px solid var(--line);
       border-radius: 28px;
@@ -95,10 +98,14 @@
     }
 
     .frame img {
+      position: absolute;
+      inset: 0;
+      display: block;
       width: 100%;
-      height: auto;
-      max-height: min(72vh, 760px);
-      object-fit: contain;
+      height: 100%;
+      max-height: none;
+      object-fit: cover;
+      object-position: center;
       opacity: 0;
       transition: opacity 0.35s ease;
     }
@@ -123,10 +130,10 @@
     h1 {
       margin: 0;
       font-family: Fraunces, "Iowan Old Style", Palatino, Georgia, serif;
-      font-size: clamp(2.8rem, 6vw, 4.8rem);
+      font-size: clamp(1.85rem, 3.4vw, 2.65rem);
       font-weight: 500;
-      letter-spacing: -0.045em;
-      line-height: 0.92;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
       text-wrap: balance;
     }
 
@@ -156,6 +163,20 @@
       font-size: 1.15rem;
     }
 
+    .blend {
+      margin: 0.7rem 0 0;
+      color: var(--rust);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .roast-note {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
     .description > :first-child { margin-top: 0; }
     .description > :last-child { margin-bottom: 0; }
     .description img { max-width: 100%; height: auto; }
@@ -166,6 +187,74 @@
       padding-top: 1.75rem;
       border-top: 1px solid var(--line);
     }
+
+    .story h2 {
+      margin: 1.5rem 0 0.55rem;
+      color: var(--ink);
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(1.7rem, 3vw, 2.15rem);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+    }
+
+    .story h2:first-child {
+      margin-top: 0;
+    }
+
+    .coffee-highlight {
+      margin: 1.5rem 0;
+      padding: 1.35rem 1.4rem 1.45rem;
+      color: var(--ink);
+      background: var(--plate);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--rust);
+      border-radius: 18px;
+      box-shadow: 0 12px 28px rgba(27, 20, 15, 0.05);
+    }
+
+    .coffee-highlight > :first-child {
+      margin-top: 0;
+      color: var(--ink);
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.45rem;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+    }
+
+    .coffee-highlight h2 {
+      margin-top: 0;
+    }
+
+    .estate-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+
+    .estate-links a,
+    .estate-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      min-height: 2.7rem;
+      padding: 0.35rem 0.95rem 0.35rem 0.45rem;
+      color: var(--paper);
+      background: var(--ink);
+      border-radius: 999px;
+      font-size: 0.92rem;
+      text-decoration: none;
+    }
+
+    .estate-logo svg,
+    .estate-links a svg {
+      width: 1.45rem;
+      height: 1.45rem;
+      flex: 0 0 auto;
+    }
+
+    .estate-logo:hover,
+    .estate-links a:hover { background: var(--rust); }
 
     .gallery {
       margin-top: 1.5rem;
@@ -207,8 +296,9 @@
       display: block;
       width: 168px;
       height: 200px;
-      object-fit: contain;
-      background: #fff;
+      object-fit: cover;
+      object-position: center;
+      background: var(--plate);
       border: 1px solid var(--line);
       border-radius: 16px;
     }
@@ -271,15 +361,32 @@
       gap: 0.4rem;
     }
 
-    .grind select {
-      width: min(100%, 22rem);
+    .grind select,
+    .grind-note textarea {
+      width: min(100%, 28rem);
       border: 1px solid var(--line);
-      border-radius: 999px;
       background: var(--plate);
       color: var(--ink);
       font: inherit;
       font-size: 1rem;
+    }
+
+    .grind select {
+      border-radius: 999px;
       padding: 0.8rem 1.15rem;
+    }
+
+    .grind-note {
+      display: grid;
+      gap: 0.4rem;
+      margin-top: 0.35rem;
+    }
+
+    .grind-note textarea {
+      min-height: 5.5rem;
+      border-radius: 18px;
+      padding: 0.8rem 1rem;
+      resize: vertical;
     }
 
     .qty { display: grid; gap: 0.4rem; }
@@ -354,10 +461,33 @@
 
     footer {
       padding-top: 1rem;
+      padding-bottom: 5rem;
       border-top: 1px solid var(--line);
       color: var(--muted);
       font-size: 0.9rem;
     }
+
+    .ig-float {
+      position: fixed;
+      right: 1.15rem;
+      bottom: 1.15rem;
+      z-index: 5;
+      display: grid;
+      place-items: center;
+      width: 3.1rem;
+      height: 3.1rem;
+      color: var(--paper);
+      background: var(--ink);
+      border-radius: 999px;
+      box-shadow: 0 10px 24px rgba(27, 20, 15, 0.18);
+    }
+
+    .ig-float svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .ig-float:hover { background: var(--rust); }
 
     .footer-links {
       display: flex;
@@ -409,13 +539,37 @@
     }
 
     @media (max-width: 800px) {
-      .product { grid-template-columns: 1fr; }
-      .frame { position: static; min-height: 0; }
-      .frame img { max-height: 46vh; }
-      .buy { width: 100%; }
+      body { font-size: 0.92rem; }
+      .wrap { padding: 0.65rem 0 1.4rem; }
+      header { padding-bottom: 0.55rem; }
+      .brand { min-height: 0; }
+      .logo { height: 46px; max-width: 40vw; }
+      .product {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        padding: 0.7rem 0 1.2rem;
+      }
+      .frame {
+        position: relative;
+        top: auto;
+        width: 100%;
+        height: auto;
+        max-height: none;
+        aspect-ratio: 1 / 1;
+      }
+      h1 { font-size: 1.42rem; }
+      .blend { margin-top: 0.3rem; font-size: 0.68rem; }
+      .price { margin-top: 0.4rem; font-size: 1.22rem; }
+      .description { margin-top: 0.45rem; }
+      .description.lead { font-size: 0.9rem; }
+      .purchase { gap: 0.5rem; margin-top: 0.7rem; }
+      .grind select { padding: 0.55rem 0.85rem; font-size: 0.9rem; }
+      .stepper button { width: 2.15rem; height: 2.25rem; font-size: 1.05rem; }
+      .buy { width: 100%; padding: 0.72rem 1rem; font-size: 0.8rem; }
+      .gallery { margin-top: 0.9rem; }
       .slide,
-      .slide img { width: 140px; }
-      .slide img { height: 168px; }
+      .slide img { width: 126px; }
+      .slide img { height: 150px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
